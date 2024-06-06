@@ -1,3 +1,3 @@
-from pathlib import Path
-p = Path("./images/negative (1).jpg").resolve()
-print(p.is_absolute())
+import torch
+print(torch.cuda.is_available())
+print(torch.__version__)
