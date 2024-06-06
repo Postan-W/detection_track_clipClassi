@@ -2,3 +2,4 @@
 models/*
 *.mp4
 *.avi
+./main_code/runs/*
