@@ -1,3 +1,3 @@
-import torch
-print(torch.cuda.is_available())
-print(torch.__version__)
+a = [1]
+a += [2]
+print(a)
