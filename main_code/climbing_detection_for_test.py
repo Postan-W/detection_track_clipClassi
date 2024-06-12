@@ -4,6 +4,7 @@ from queue import Queue
 from data_structure import Frame
 from threading import Thread
 from myutils.public_logger import logger
+import cv2
 
 class ClimbingDetection:
     def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8m20240606.pt"):
@@ -17,8 +18,9 @@ class ClimbingDetection:
             frame = self.input_queue.get()
             if not frame.stops:
                 result = self.yolo_model(source=frame.data,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
-                boxes = result.boxes.data.tolist()#[[],[]..]] or []
-                frame.boxes = boxes
+                frame.boxes = result.boxes.data.tolist()#[[],[]..]] or []
+                frame.data = result.plot()
+                self.output_queue.put(frame)
             else:
                 self.output_queue.put(frame)
 
@@ -31,5 +33,8 @@ if __name__ == '__main__':
     video_path = "./videos/positive1.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
+    climbing_detection = ClimbingDetection(input_queue,output_queue)
+    climbing_detection.start()
+
 
 
