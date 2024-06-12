@@ -16,10 +16,10 @@ def get_images(videopath,destination,step = 5):
     ret, frame = cap.read()
     count = 1
     while ret:
-        ret, frame = cap.read()
         if count % step == 0 and ret:
             filename = os.path.join(destination, video_name + "_" + str(count) + ".jpg")
             cv2.imwrite(filename, frame)
+        ret, frame = cap.read()
         count += 1
     cap.release()
     cv2.destroyAllWindows()
