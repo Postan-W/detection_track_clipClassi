@@ -12,7 +12,7 @@ class VideoReader:
         self.timestep = timestep
 
     def task(self):
-        cap = cv2.VideoCapture(self.video_path)
+        cap = cv2.VideoCapture(self.path)
         ret, frame = cap.read()
         count = 1
         while ret:

@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-logging_reserved_path = "../climbing_logs/log.txt"
+logging_reserved_path = "./climbing_logs/log.txt"
 logger = logging.getLogger("PublicLogger")
 logger.setLevel(level=logging.INFO)
 formatter = logging.Formatter('%(levelname)s %(asctime)s %(filename)s %(funcName)s line=%(lineno)d %(message)s',datefmt="%y-%m-%d %H:%M:%S")
