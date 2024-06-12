@@ -24,7 +24,9 @@ def get_images(videopath,destination,step = 5):
     cap.release()
     cv2.destroyAllWindows()
 
-video_id = 0
-destination = "../yolo_images/val/images/"
-for videopath in get_source("../yolo_val_videos"):
-    get_images(videopath,destination,step=10)
+# video_id = 0
+# destination = "../yolo_images/val/images/"
+# for videopath in get_source("../yolo_val_videos"):
+#     get_images(videopath,destination,step=10)
+
+get_images("./main_code/videos/positive1.mp4",destination="./main_code/images/",step=10)

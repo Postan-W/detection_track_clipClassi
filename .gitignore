@@ -2,4 +2,7 @@
 models/*
 *.mp4
 *.avi
+*.jpg
+*.jpeg
+*.png
 ./main_code/runs/*

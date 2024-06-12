@@ -17,7 +17,8 @@ class ClimbingDetection:
             frame = self.input_queue.get()
             if not frame.stops:
                 result = self.yolo_model(source=frame.data,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
-
+                boxes = result.boxes.data.tolist()#[[],[]..]] or []
+                frame.boxes = boxes
             else:
                 self.output_queue.put(frame)
 
