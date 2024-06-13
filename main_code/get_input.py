@@ -20,12 +20,10 @@ class VideoReader:
                 self.queue.put(Frame(data=frame))
             ret, frame = cap.read()
             count += 1
-        if ret:
-            logger.info("视频抽帧已完成")
-            self.queue.put(Frame(stops=True))#终止指示帧
-        else:
-            logger.info("视频抽帧异常结束")
-            self.queue.put(Frame(stops=True))#终止指示帧
+
+        logger.info("视频抽帧已完成")
+        self.queue.put(Frame(stops=True))#终止指示帧
+
 
         cap.release()
         cv2.destroyAllWindows()
@@ -33,3 +31,4 @@ class VideoReader:
     def start(self):
         self.thread.start()
 
+cv2 = cv2.VideoCapture("rtsp://localhost:8554/")

@@ -3,7 +3,7 @@ from subprocess import Popen
 import time
 import os
 import signal
-p = Popen(["python","temp.py"])
+p = Popen(["python","报警逻辑试验.py"])
 
 time.sleep(10)
 

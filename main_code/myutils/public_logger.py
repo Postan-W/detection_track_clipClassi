@@ -1,6 +1,8 @@
 import logging
 from logging.handlers import RotatingFileHandler
-
+import os
+if not os.path.exists("./climbing_logs/"):
+    os.mkdir("./climbing_logs")
 logging_reserved_path = "./climbing_logs/log.txt"
 logger = logging.getLogger("PublicLogger")
 logger.setLevel(level=logging.INFO)

@@ -44,6 +44,7 @@ class Frame(BaseModel):
     in_count: 进入人数总数
     out_count: 外出人数总数
     """
+    alarm: List[bool] = []
     stops: bool = False
     boxes: Optional[List[List[float]]] = None
     points: Optional[List[List[float]]] = None
