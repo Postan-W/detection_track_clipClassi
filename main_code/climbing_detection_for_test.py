@@ -85,9 +85,9 @@ if __name__ == '__main__':
         frame = output_queue.get()
         if len(frame.boxes) != 0:
             if True in frame.alarm:
-                print("有人翻越闸机")
+                logger.info("有人翻越闸机")
             else:
-                print("有人翻越闸机，但无需重复报警")
+                logger.info("有人翻越闸机，但无需重复报警")
         if not frame.stops:
             video.write(frame.data)
         else:
