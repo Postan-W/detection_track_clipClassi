@@ -42,4 +42,5 @@ while cap.isOpened():
 -stream_loop -1   表示无限循环读取
 -i  就是输入的文件
 -f  格式化输出到哪里
+例：ffmpeg -re -stream_loop -1 -i ./videos/merged_video.mp4 -c copy -f rtsp rtsp://127.0.0.1:8554/video
 """

@@ -31,4 +31,3 @@ class VideoReader:
     def start(self):
         self.thread.start()
 
-cv2 = cv2.VideoCapture("rtsp://localhost:8554/")
