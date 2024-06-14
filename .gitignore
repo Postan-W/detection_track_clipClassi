@@ -3,6 +3,7 @@ models/*
 *.mp4
 *.avi
 *.jpg
+!参考.jpg
 !positive1.mp4
 !竞业达智能视频算法原始逻辑流程图.jpg
 *.jpeg

@@ -1,3 +1,5 @@
+
+#要配合流服务器
 # 本地摄像头推流
 import queue
 import threading
@@ -6,7 +8,7 @@ import subprocess as sp
 
 #此处换为你自己的地址
 rtsp_url = 'rtsp://127.0.0.1:8554/video'
-cap = cv2.VideoCapture("./videos/merged_video.mp4")
+cap = cv2.VideoCapture("../videos/merged_video.mp4")
 print(cap.isOpened())
 # Get video information
 fps = int(cap.get(cv2.CAP_PROP_FPS))
@@ -34,15 +36,3 @@ while cap.isOpened():
     else:
         p.stdin.write(frame.tostring())
 
-"""
-其他方案1：
-手动推流(推荐)：ffmpeg -re -stream_loop -1 -i （你的文件名） -c copy -f rtsp rtsp://127.0.0.1:8554/video
-简单对参数说明
--re  是以流的方式读取
--stream_loop -1   表示无限循环读取
--i  就是输入的文件
--f  格式化输出到哪里
-例：ffmpeg -re -stream_loop -1 -i ./videos/merged_video.mp4 -c copy -f rtsp rtsp://127.0.0.1:8554/video
-其他方案2:
-直接使用easyDarwin的直播服务，创建直播，选择拉流，资源选择自己上传的点播资源
-"""
