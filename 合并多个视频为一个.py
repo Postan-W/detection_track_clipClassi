@@ -1,7 +1,7 @@
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 import glob
 
-video_dir = r"C:\Users\wmingdru\Desktop\workspace\data\\temp\\"
+video_dir = "./videos/origin/"
 output_path = r"main_code/videos/merged_video.mp4"
 
 videos = glob.glob(video_dir+"*.mp4")

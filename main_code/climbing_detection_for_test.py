@@ -6,9 +6,6 @@ from threading import Thread
 from myutils.public_logger import logger
 import cv2
 import time
-import logging
-
-logging.basicConfig(level=logging.ERROR)
 
 class ClimbingDetection:
     def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8m20240606.pt",track_config="./track_config/botsort.yaml"):
@@ -36,12 +33,15 @@ class ClimbingDetection:
                 if id in self.id_record.keys():
                     if int(time.time() - self.id_record[id]) < threshhold:
                         frame.alarm.append(False)
+                        # logger.info("**********有人翻越，但无需重复报警********")
                     else:
                         frame.alarm.append(True)#如果超时了，则认为是同一个人的新的翻越行为，仍要报警
                         self.id_record[id] = time.time()
+                        # logger.info("======同一人翻越，但时间间隔超过阈值，需报警==========")
                 else:
                     self.id_record[id] = time.time()
                     frame.alarm.append(True)
+                    logger.info("###############有新目标翻越，id是{},需报警#################".format(id))
 
     def task(self):
         while True:
@@ -50,8 +50,8 @@ class ClimbingDetection:
                 #注1：If object confidence score will be low, i.e lower than track_high_thresh, then there will be no tracks successfully returned and updated.
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
-                #注4:追踪的结果是ReID的
-                result = self.yolo_model.track(verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                #注4:追踪的结果是ReID的,需要persist=True
+                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,cls,conf,id],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
@@ -78,17 +78,18 @@ if __name__ == '__main__':
     first_image = output_queue.get().data
     height, width, _ = first_image.shape
     video = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'DIVX'), 30, (width, height))
-    print((width, height))
+    # print((width, height))
     video.write(first_image)
     while True:
         time.sleep(1/30)#模拟下实时流，30fps
         frame = output_queue.get()
-        if len(frame.boxes) != 0:
-            if True in frame.alarm:
-                logger.info("有人翻越闸机")
-            else:
-                logger.info("有人翻越闸机，但无需重复报警")
         if not frame.stops:
+            # if len(frame.boxes) != 0:
+            #     if True in frame.alarm:
+            #         logger.info("有人翻越闸机")
+            #     else:
+            #         logger.info("有人翻越闸机，但无需重复报警")
+
             video.write(frame.data)
         else:
             video.release()

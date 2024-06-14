@@ -5,6 +5,7 @@ models/*
 *.jpg
 !参考.jpg
 !positive1.mp4
+./main_code/climbing_logs
 !竞业达智能视频算法原始逻辑流程图.jpg
 *.jpeg
 *.png

@@ -20,8 +20,6 @@ class VideoReader:
                 self.queue.put(Frame(data=frame))
             ret, frame = cap.read()
             count += 1
-            if count == 3000:
-                break
 
         logger.info("视频抽帧已完成")
         self.queue.put(Frame(stops=True))#终止指示帧
