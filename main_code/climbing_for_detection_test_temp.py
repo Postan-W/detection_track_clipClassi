@@ -7,7 +7,7 @@ import cv2
 import time
 from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l_20240617.pt",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8m20240606.pt",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -50,13 +50,14 @@ class ClimbingDetection:
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
-                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[0],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
                 #     print(track_id,frame.boxes)
                 # frame.data = result.plot()
-
+                if not len(frame.boxes) == 0:
+                    plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="climb")
                 self.id_update(frame)
                 self.output_queue.put(frame)
             else:
