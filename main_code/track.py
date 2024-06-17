@@ -4,6 +4,6 @@ from ultralytics import YOLO
 model = YOLO("./weights/yolov8m.pt")  # pretrained YOLOv8n model.type:nsmlx
 print(model.names)
 
-result = model.track(source="./bus.jpg",save=True)[0]
-print(result.boxes.data.tolist())
+result = model.track(source="./bus.jpg",save=True,classes=[0])[0]
+print([i[-3] for i in result.boxes.data.tolist()])
 print(result.boxes.id)

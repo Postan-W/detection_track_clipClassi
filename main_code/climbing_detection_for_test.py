@@ -29,7 +29,7 @@ class ClimbingDetection:
             return
         else:
             for box in frame.boxes:
-                id = int(box[-1])
+                id = int(box[-3])
                 if id in self.id_record.keys():
                     if int(time.time() - self.id_record[id]) < threshhold:
                         frame.alarm.append(False)
@@ -52,7 +52,7 @@ class ClimbingDetection:
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
                 result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
-                frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,cls,conf,id],[]..]] or []
+                frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
                 #     print(track_id,frame.boxes)
