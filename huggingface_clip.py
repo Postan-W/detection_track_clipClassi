@@ -14,7 +14,7 @@ for image in images:
 images_trans = torch.tensor(images_trans, dtype=torch.float32)
 
 
-text = open_clip.tokenize("climbing over the subway gate,passing through the subway gate,walking on the road".split(","))
+text = open_clip.tokenize("climbing.yaml over the subway gate,passing through the subway gate,walking on the road".split(","))
 
 with torch.no_grad():
     image_features = model.encode_image(images_trans)

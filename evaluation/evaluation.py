@@ -38,7 +38,7 @@ for i in range(1,steps+2):
     images = [Image.open(i) for i in batch_images_path]
     print("图片加载耗时:{}".format(time.time()-load_image_start))
     input_process_start = time.time()
-    inputs = processor(text=["climbing over the subway gate","passing through the subway gate", "walking on the road"],
+    inputs = processor(text=["climbing.yaml over the subway gate","passing through the subway gate", "walking on the road"],
                        images=images, return_tensors="pt", padding=True)
     print("数据处理耗时:{}".format(time.time()-input_process_start))
     move_start = time.time()

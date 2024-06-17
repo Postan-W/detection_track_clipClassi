@@ -4,8 +4,8 @@
 """
 import os
 import glob
-images_dir = "../subway_images/val/images"
-labels_dir = "../subway_images/val/labels"
+images_dir = "./images/val/images"
+labels_dir = "./images/val/labels"
 
 images = glob.glob(os.path.join(images_dir,"*.jpg"))
 labels = [os.path.splitext(os.path.split(i)[1])[0] for i in glob.glob(os.path.join(labels_dir,"*.txt"))]

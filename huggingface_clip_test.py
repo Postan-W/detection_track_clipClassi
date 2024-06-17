@@ -49,7 +49,7 @@ def f2():
     image_root = "./images"
     for image in os.listdir(image_root):
         image = Image.open(os.path.join(image_root, image))
-        labels = "climbing over the subway gate,passing through the subway gate,walking on the road".split(",")
+        labels = "climbing.yaml over the subway gate,passing through the subway gate,walking on the road".split(",")
         inputs = processor(text=labels, images=image, return_tensors="pt", padding=True)
 
         for key, value in inputs.items():
@@ -66,4 +66,3 @@ def f2():
 
 # f1()
 
-f2()
