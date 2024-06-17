@@ -14,11 +14,9 @@ formatter2 = logging.Formatter('%(message)s',datefmt="%y-%m-%d %H:%M:%S")
 file_handler = RotatingFileHandler(logging_reserved_path, maxBytes=3*1024*1024, backupCount=10)#3M,10个日志文件
 file_handler.setLevel(logging.INFO)
 file_handler.setFormatter(formatter2)
-file_handler.encoding("utf-8")
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 console.setFormatter(formatter2)
-
 logger.addHandler(file_handler)
 logger.addHandler(console)
 
