@@ -56,7 +56,7 @@ def f2():
             inputs[key] = value.cuda()
         with torch.no_grad():
             outputs = model(**inputs)
-        logits_per_image = outputs.logits_per_image  # this is the image-text similarity score
+        logits_per_image = outputs.logits_per_image #this is the image-text similarity score
         print(logits_per_image)
         probs = logits_per_image.softmax(dim=1)  # we can take the softmax to get the label probabilities
         print(probs)

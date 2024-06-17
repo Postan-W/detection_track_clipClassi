@@ -5,7 +5,7 @@ from threading import Thread
 from myutils.public_logger import logger
 import cv2
 import time
-
+from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 class ClimbingDetection:
     def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l_20240617.pt",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
@@ -55,7 +55,8 @@ class ClimbingDetection:
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
                 #     print(track_id,frame.boxes)
-                frame.data = result.plot()
+                # frame.data = result.plot()
+
                 self.id_update(frame)
                 self.output_queue.put(frame)
             else:
@@ -68,8 +69,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "./videos/merged_video5.mp4"
-    output_path = "outputs/output_oneclass.mp4"
+    video_path = "./videos/pj18.mp4"
+    output_path = "outputs/output_pj18.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
