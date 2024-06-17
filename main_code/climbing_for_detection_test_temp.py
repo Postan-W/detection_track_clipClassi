@@ -28,19 +28,23 @@ class ClimbingDetection:
             return
         else:
             for box in frame.boxes:
-                id = int(box[-3])
-                if id in self.id_record.keys():
-                    if int(time.time() - self.id_record[id]) < threshhold:
-                        frame.alarm.append(False)
-                        # logger.info("**********有人翻越，但无需重复报警********")
+                if len(box) == 7:
+                    id = int(box[-3])
+                    if id in self.id_record.keys():
+                        if int(time.time() - self.id_record[id]) < threshhold:
+                            frame.alarm.append(False)
+                            # logger.info("**********有人翻越，但无需重复报警********")
+                        else:
+                            frame.alarm.append(True)  #如果超时了，则认为是同一个人的新的翻越行为，仍要报警
+                            self.id_record[id] = time.time()
+                            # logger.info("======同一人翻越，但时间间隔超过阈值，需报警==========")
                     else:
-                        frame.alarm.append(True)#如果超时了，则认为是同一个人的新的翻越行为，仍要报警
                         self.id_record[id] = time.time()
-                        # logger.info("======同一人翻越，但时间间隔超过阈值，需报警==========")
+                        frame.alarm.append(True)
+                        #logger.info("###############有新目标翻越，id是{},需报警#################".format(id))
                 else:
-                    self.id_record[id] = time.time()
-                    frame.alarm.append(True)
-                    logger.info("###############有新目标翻越，id是{},需报警#################".format(id))
+                    logger.info("box的长度是:{},因为低于追踪设定的最小置信度，所以没有id".format(len(box)))
+                    frame.alarm.append(False)
 
     def task(self):
         while True:
@@ -58,6 +62,7 @@ class ClimbingDetection:
                 # frame.data = result.plot()
                 if not len(frame.boxes) == 0:
                     plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="climb")
+
                 self.id_update(frame)
                 self.output_queue.put(frame)
             else:

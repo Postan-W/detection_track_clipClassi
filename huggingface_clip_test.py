@@ -10,15 +10,15 @@ os.environ['HTTP_PROXY'] = proxy_url
 os.environ['HTTPS_PROXY'] = proxy_url
 # Load model directly
 from transformers import AutoProcessor, AutoModelForZeroShotImageClassification
-local_model_directory = "./models/metaclip-h14-fullcc2_5b"
+local_model_directory = "./main_code/models/metaclip-h14-fullcc2_5b"
 
 
-# model = AutoModelForZeroShotImageClassification.from_pretrained(local_model_directory).cuda()
-# processor = AutoProcessor.from_pretrained(local_model_directory)
+model = AutoModelForZeroShotImageClassification.from_pretrained(local_model_directory)
+processor = AutoProcessor.from_pretrained(local_model_directory)
 # model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14",local_files_only=True).cuda()
 # processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14",local_files_only=True)
-model = CLIPModel.from_pretrained("facebook/metaclip-h14-fullcc2.5b",local_files_only=True).cuda()
-processor = CLIPProcessor.from_pretrained("facebook/metaclip-h14-fullcc2.5b",local_files_only=True)
+# model = CLIPModel.from_pretrained("facebook/metaclip-h14-fullcc2.5b",local_files_only=True).cuda()
+# processor = CLIPProcessor.from_pretrained("facebook/metaclip-h14-fullcc2.5b",local_files_only=True)
 
 
 def f1():
@@ -64,5 +64,5 @@ def f2():
         print(result.item())
     print("耗时:{}".format(time.time() - start))
 
-# f1()
+f1()
 
