@@ -1,7 +1,6 @@
 from ultralytics import YOLO
 from get_input import VideoReader
 from queue import Queue
-from data_structure import Frame
 from threading import Thread
 from myutils.public_logger import logger
 import cv2
