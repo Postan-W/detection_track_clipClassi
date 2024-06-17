@@ -10,3 +10,7 @@ models/*
 *.jpeg
 *.png
 ./main_code/runs/*
+*.pt
+!yolov8m.pt
+!yolov8m20240606.pt
+!yolov8n-pose.pt

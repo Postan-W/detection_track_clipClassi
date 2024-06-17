@@ -3,7 +3,7 @@ import os
 
 
 def get_source(rootpath:str,source_format:list=["mp4"]):
-    source_list = [i  for i in os.listdir(rootpath) if i.split(".")[1] in source_format]
+    source_list = [i for i in os.listdir(rootpath) if i.split(".")[1] in source_format]
     return [os.path.join(rootpath,i) for i in source_list]
 
 def get_images(videopath,destination,step = 5):
@@ -24,9 +24,9 @@ def get_images(videopath,destination,step = 5):
     cap.release()
     cv2.destroyAllWindows()
 
-# video_id = 0
-# destination = "../yolo_images/val/images/"
-# for videopath in get_source("../yolo_val_videos"):
-#     get_images(videopath,destination,step=10)
 
-get_images("./main_code/videos/positive1.mp4",destination="./main_code/images/",step=10)
+destination = "./images/"
+for videopath in get_source("./videos/output"):
+    get_images(videopath,destination,step=15)
+
+# get_images("./main_code/videos/positive1.mp4",destination="./main_code/images/",step=10)
