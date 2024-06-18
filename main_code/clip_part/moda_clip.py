@@ -9,8 +9,8 @@ from modelscope.preprocessors.image import load_image
 
 pipeline = pipeline(task=Tasks.multi_modal_embedding,
     model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
-input_img = load_image('https://clip-cn-beijing.oss-cn-beijing.aliyuncs.com/pokemon.jpeg') # 支持皮卡丘示例图片路径/本地图片 返回PIL.Image
-input_texts = ["杰尼龟", "妙蛙种子", "小火龙", "皮卡丘"]
+input_img = load_image("../clip_images/image0146.jpg") # 支持皮卡丘示例图片路径/本地图片 返回PIL.Image
+input_texts = ["有人在弯腰翻越地铁闸机","有人双手支撑在地铁闸机上攀爬","有人笔直地站着","人正常通过地铁闸机","人在地铁闸机旁边站着"]
 
 # 支持一张图片(PIL.Image)或多张图片(List[PIL.Image])输入，输出归一化特征向量
 img_embedding = pipeline.forward({'img': input_img})['img_embedding'] # 2D Tensor, [图片数, 特征维度]
@@ -24,5 +24,7 @@ with torch.no_grad():
     logits_per_image = (img_embedding / pipeline.model.temperature) @ text_embedding.t()
     # 根据logit计算概率分布
     probs = logits_per_image.softmax(dim=-1).cpu().numpy()
-
-print("图文匹配概率:", probs)
+clean_result = []
+for img_result in probs:
+    clean_result.append([round(i,2) for i in img_result])
+print("图文匹配概率:", clean_result)
