@@ -4,16 +4,29 @@ from queue import Queue
 from threading import Thread
 from myutils.public_logger import logger
 import cv2
+import torch
+from modelscope.utils.constant import Tasks
+from modelscope.pipelines import pipeline
+from modelscope.preprocessors.image import load_image
+from ultralytics import YOLO
+from PIL import Image
 import time
 from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8m20240606.pt",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l20240618.pt",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
         self.output_queue = output_queue
         self.id_record = {}#key:id,value:time.time()
         self.track_config = track_config
+        #clip模型暂时成固定的
+        self.clip_model = pipeline(task=Tasks.multi_modal_embedding,
+    model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
+        #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
+        self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬", "有人笔直地站着", "人笔直通过障碍物",
+                       "有人从障碍物旁边走过", "画面里没有人"]
+        self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']  # 2D Tensor, [文本数, 特征维度]
 
     def id_update(self,frame,threshhold:int=5):
         """
@@ -43,7 +56,7 @@ class ClimbingDetection:
                         frame.alarm.append(True)
                         #logger.info("###############有新目标翻越，id是{},需报警#################".format(id))
                 else:
-                    logger.info("box的长度是:{},因为低于追踪设定的最小置信度，所以没有id".format(len(box)))
+                    #logger.info("box的长度是:{},因为低于追踪设定的最小置信度，所以没有id".format(len(box)))
                     frame.alarm.append(False)
 
     def task(self):
@@ -61,8 +74,36 @@ class ClimbingDetection:
                 #     print(track_id,frame.boxes)
                 # frame.data = result.plot()
                 if not len(frame.boxes) == 0:
-                    plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="climb")
+                    final_boxes = []
 
+                    clip_input = []
+                    for box in frame.boxes:
+                        x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
+                        croped = frame.data[y1:y2, x1:x2, :]
+                        rgb_image = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
+                        pil_image = Image.fromarray(rgb_image)
+                        clip_input.append(pil_image)
+                    img_embedding = self.clip_model.forward({'img': clip_input})['img_embedding']  # 2D Tensor, [图片数, 特征维度]
+                    with torch.no_grad():
+                        # 计算内积得到logit，考虑模型temperature
+                        logits_per_image = (img_embedding / self.clip_model.model.temperature) @ self.text_embedding.t()
+                        # 根据logit计算概率分布
+                        probs = logits_per_image.softmax(dim=-1).cpu().numpy()
+                    clean_result = []
+                    for img_result in probs:
+                        clean_result.append([round(i, 2) for i in img_result])
+
+                    for i, prob in enumerate(clean_result):
+                        # print(i, prob)
+                        target_prob = prob[0] + prob[1]
+                        residual_prob = 1 - target_prob
+                        # print(target_prob, residual_prob)
+                        if target_prob > residual_prob:
+                            final_boxes.append(list(frame.boxes[i]))
+                    frame.boxes = final_boxes#更新boxes
+                    plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="climb")#画框
+
+            # self.id_update(frame)
                 self.id_update(frame)
                 self.output_queue.put(frame)
             else:
@@ -75,8 +116,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "./videos/pj18.mp4"
-    output_path = "outputs/output_pj18.mp4"
+    video_path = "../videos/output/merged_video618_3.mp4"
+    output_path = "outputs/2.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)

@@ -1,3 +1,2 @@
-l = [[1,2,3,4,5],[6,7,8,9,10]]
-
-print(round(l))
+from ultralytics import YOLO
+model = YOLO("./weights/yolov8l20240618.pt")
