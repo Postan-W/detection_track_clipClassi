@@ -18,7 +18,7 @@ from PIL import Image
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model, preprocess = clip.load("ViT-B/32", device=device)
-
+l = [Image.open("../../temp_images/image030.jpg")]
 images = torch.stack([preprocess(im) for im in l]).to(device)
 with torch.no_grad():
   image_features = model.encode_image(images)

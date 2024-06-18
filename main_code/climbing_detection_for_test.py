@@ -54,7 +54,7 @@ class ClimbingDetection:
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
-                result = self.yolo_model.track(persist=True,verbose=True,source=frame.data,tracker=self.track_config,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=True,source=frame.data,tracker=self.track_config,classes=[1],conf=0.32,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
@@ -72,8 +72,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/output/merged_video618_2.mp4"
-    output_path = "outputs/output_yolov8l618.mp4"
+    video_path = "../videos/output/merged_video618_3.mp4"
+    output_path = "outputs/output_yolov8l618_2.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
