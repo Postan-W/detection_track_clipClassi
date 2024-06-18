@@ -19,3 +19,4 @@ models/*
 *.cache
 ./temp_images/*
 main_code/models/
+!subway_images

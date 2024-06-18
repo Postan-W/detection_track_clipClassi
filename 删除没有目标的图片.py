@@ -4,13 +4,33 @@
 """
 import os
 import glob
-images_dir = "./images/val/images"
-labels_dir = "./images/val/labels"
+images_dir = "./subway_images/val/images"
+labels_dir = "./subway_images/val/labels"
 
-images = glob.glob(os.path.join(images_dir,"*.jpg"))
-labels = [os.path.splitext(os.path.split(i)[1])[0] for i in glob.glob(os.path.join(labels_dir,"*.txt"))]
-labels.remove('classes')
+def delete_images(images_dir,labels_dir):
+    images = glob.glob(os.path.join(images_dir, "*.jpg"))
+    labels = [os.path.splitext(os.path.split(i)[1])[0] for i in glob.glob(os.path.join(labels_dir, "*.txt"))]
+    labels.remove('classes')
 
-for image in images:
-    if not os.path.splitext(os.path.split(image)[1])[0] in labels:
-        os.remove(image)
+    for image in images:
+        if not os.path.splitext(os.path.split(image)[1])[0] in labels:
+            os.remove(image)
+
+# delete_images(images_dir,labels_dir)
+
+#下面是标签不小心多了，删除标签
+def delete_labels(images_dir,labels_dir):
+    images = [os.path.splitext(os.path.split(i)[1])[0] for i in glob.glob(os.path.join(images_dir,"*.jpg"))]
+    labels = glob.glob(os.path.join(labels_dir,"*.txt"))
+    for label in labels:
+        name = os.path.splitext(os.path.split(label)[1])[0]
+        if not name in images:
+            if name != "classes":
+                os.remove(label)
+            else:
+                print("classes.txt不用删除")
+
+# delete_labels(images_dir,labels_dir)
+
+
+

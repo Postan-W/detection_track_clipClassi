@@ -8,7 +8,7 @@ def get_model(path):
 
 model_path = "./weights/yolov8m20240606.pt"
 input = "../videos/output/merged_video.mp4"
-
+get_model(model_path)
 def get_detected_output(model,input,classes,conf=0.65,imgsz=640,iou=0.7,device="cuda",save_frames=False):
     """
     :param model:
@@ -20,4 +20,4 @@ def get_detected_output(model,input,classes,conf=0.65,imgsz=640,iou=0.7,device="
     for result in results:#仅仅是为了让迭代器返回值，所以下面不写任何逻辑
         pass
 
-get_detected_output(model=get_model(model_path),input=input,classes=[1],save_frames=True)
+# get_detected_output(model=get_model(model_path),input=input,classes=[1],save_frames=True)
