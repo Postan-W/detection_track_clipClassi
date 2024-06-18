@@ -14,6 +14,8 @@ models/*
 !yolov8m.pt
 !yolov8m20240606.pt
 !yolov8n-pose.pt
+!yolov8l20240618.pt
+!yolov8m618.pt
 ./images/
 *.txt
 *.cache

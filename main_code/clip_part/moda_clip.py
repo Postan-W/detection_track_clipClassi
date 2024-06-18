@@ -9,8 +9,8 @@ from modelscope.preprocessors.image import load_image
 
 pipeline = pipeline(task=Tasks.multi_modal_embedding,
     model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
-input_img = load_image("../clip_images/image0146.jpg") # 支持皮卡丘示例图片路径/本地图片 返回PIL.Image
-input_texts = ["有人在弯腰翻越地铁闸机","有人双手支撑在地铁闸机上攀爬","有人笔直地站着","人正常通过地铁闸机","人在地铁闸机旁边站着"]
+input_img = load_image("../clip_images/image0124.jpg") # 支持皮卡丘示例图片路径/本地图片 返回PIL.Image
+input_texts = ["有人在弯腰翻越障碍物","有人双手支撑在障碍物上攀爬","有人笔直地站着","人笔直通过障碍物","有人从障碍物旁边走过"]
 
 # 支持一张图片(PIL.Image)或多张图片(List[PIL.Image])输入，输出归一化特征向量
 img_embedding = pipeline.forward({'img': input_img})['img_embedding'] # 2D Tensor, [图片数, 特征维度]
