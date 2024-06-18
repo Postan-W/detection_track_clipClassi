@@ -19,5 +19,7 @@ models/*
 *.cache
 ./temp_images/*
 main_code/models/
-!subway_images/train/*
-!subway_images/val/*
+!subway_images/train/images/*.jpg
+!subway_images/train/labels/*.txt
+!subway_images/val/images/*.jpg
+!subway_images/val/labels/*.txt
