@@ -25,7 +25,7 @@ def get_images(videopath,destination,step = 5):
     cv2.destroyAllWindows()
 
 
-destination = "./images/val_images/"
+destination = "C:/Users/wmingdru/Desktop/subway_images/val/images/"
 for videopath in get_source("./videos/val_video"):
     get_images(videopath,destination,step=15)
 

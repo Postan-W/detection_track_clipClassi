@@ -6,7 +6,7 @@ def get_model(path):
     print("模型检测的目标是:{}".format(model.names))
     return model
 
-model_path = "./weights/yolov8m20240606.pt"
+model_path = "./weights/yolov8l20240618.engine"
 input = "../videos/output/merged_video.mp4"
 get_model(model_path)
 def get_detected_output(model,input,classes,conf=0.65,imgsz=640,iou=0.7,device="cuda",save_frames=False):
