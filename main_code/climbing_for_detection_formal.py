@@ -12,8 +12,9 @@ from ultralytics import YOLO
 from PIL import Image
 import time
 from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
+
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l20240618.pt",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l20240618.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -24,7 +25,8 @@ class ClimbingDetection:
         self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
         self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬", "有人笔直地站着", "人笔直通过障碍物",
-                       "有人从障碍物旁边走过", "画面里没有人","有人低头看手机"]
+                   "有人从障碍物旁边走过", "画面里没有人"]
+        self.target_texts = 2#目标text是前n=2个
         self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 
     def id_update(self,frame,threshhold:int=5):
@@ -94,8 +96,8 @@ class ClimbingDetection:
 
                     for i, prob in enumerate(clean_result):
                         # print(i, prob)
-                        target_prob = prob[0] + prob[1]
-                        residual_prob = 1 - target_prob
+                        target_prob = sum(prob[:self.target_texts])
+                        residual_prob = sum(prob[self.target_texts:])
                         # print(target_prob, residual_prob)
                         if target_prob > residual_prob:
                             final_boxes.append(list(frame.boxes[i]))
@@ -115,7 +117,7 @@ if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
     video_path = "../videos/output/allscenes_merged.mp4"
-    output_path = "outputs/allscenes_result_l618_with_clip.mp4"
+    output_path = "outputs/allscenes_result_l618_trt_with_clip2.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
