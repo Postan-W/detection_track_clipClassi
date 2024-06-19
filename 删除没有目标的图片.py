@@ -4,8 +4,8 @@
 """
 import os
 import glob
-images_dir = "./subway_images/val/images"
-labels_dir = "./subway_images/val/labels"
+images_dir = "C:/Users/wmingdru/Desktop/subway_images/train/images"
+labels_dir = "C:/Users/wmingdru/Desktop/subway_images/train/labels"
 
 def delete_images(images_dir,labels_dir):
     images = glob.glob(os.path.join(images_dir, "*.jpg"))
@@ -16,7 +16,7 @@ def delete_images(images_dir,labels_dir):
         if not os.path.splitext(os.path.split(image)[1])[0] in labels:
             os.remove(image)
 
-# delete_images(images_dir,labels_dir)
+delete_images(images_dir,labels_dir)
 
 #下面是标签不小心多了，删除标签
 def delete_labels(images_dir,labels_dir):

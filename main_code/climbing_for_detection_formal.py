@@ -18,15 +18,14 @@ class ClimbingDetection:
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
         self.output_queue = output_queue
-        self.id_record = {}#key:id,value:time.time()
+        self.id_record = {}#key:id;value:time.time()
         self.track_config = track_config
         #clip模型暂时成固定的
-        self.clip_model = pipeline(task=Tasks.multi_modal_embedding,
-    model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
+        self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
         self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬", "有人笔直地站着", "人笔直通过障碍物",
-                       "有人从障碍物旁边走过", "画面里没有人"]
-        self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']  # 2D Tensor, [文本数, 特征维度]
+                       "有人从障碍物旁边走过", "画面里没有人","有人低头看手机"]
+        self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 
     def id_update(self,frame,threshhold:int=5):
         """
@@ -56,7 +55,7 @@ class ClimbingDetection:
                         frame.alarm.append(True)
                         #logger.info("###############有新目标翻越，id是{},需报警#################".format(id))
                 else:
-                    #logger.info("box的长度是:{},因为低于追踪设定的最小置信度，所以没有id".format(len(box)))
+                    #logger.info("box的长度是:{},因为低于追踪设定的最小置信度，所以没有id"
                     frame.alarm.append(False)
 
     def task(self):
@@ -67,7 +66,7 @@ class ClimbingDetection:
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
-                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=True,source=frame.data,tracker=self.track_config,classes=[1],conf=0.3,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
@@ -83,7 +82,7 @@ class ClimbingDetection:
                         rgb_image = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
                         pil_image = Image.fromarray(rgb_image)
                         clip_input.append(pil_image)
-                    img_embedding = self.clip_model.forward({'img': clip_input})['img_embedding']  # 2D Tensor, [图片数, 特征维度]
+                    img_embedding = self.clip_model.forward({'img': clip_input})['img_embedding']
                     with torch.no_grad():
                         # 计算内积得到logit，考虑模型temperature
                         logits_per_image = (img_embedding / self.clip_model.model.temperature) @ self.text_embedding.t()
@@ -103,7 +102,6 @@ class ClimbingDetection:
                     frame.boxes = final_boxes#更新boxes
                     plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="climb")#画框
 
-            # self.id_update(frame)
                 self.id_update(frame)
                 self.output_queue.put(frame)
             else:
@@ -116,8 +114,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/pj1.mp4"
-    output_path = "outputs/temp.mp4"
+    video_path = "../videos/output/allscenes_merged.mp4"
+    output_path = "outputs/allscenes_result_l618_with_clip.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
@@ -128,7 +126,7 @@ if __name__ == '__main__':
     # print((width, height))
     video.write(first_image)
     while True:
-        time.sleep(1/30)#模拟下实时流，30fps
+        # time.sleep(1/30)#模拟下实时流，30fps
         frame = output_queue.get()
         if not frame.stops:
             # if len(frame.boxes) != 0:

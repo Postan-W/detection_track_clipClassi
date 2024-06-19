@@ -7,7 +7,7 @@ import cv2
 import time
 
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l20240618.pt",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l20240618.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -43,7 +43,7 @@ class ClimbingDetection:
                         frame.alarm.append(True)
                         # logger.info("###############有新目标翻越，id是{},需报警#################".format(id))
                 else:
-                    #logger.info("box的长度是:{},因为低于追踪设定的最小置信度，所以没有id".format(len(box)))
+                    #logger.info("box的长度是:{},因为低于追踪设定的最小置信度，所以没有id"
                     frame.alarm.append(False)
 
     def task(self):
@@ -72,8 +72,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/pj1.mp4"
-    output_path = "outputs/temp.mp4"
+    video_path = "../videos/output/allscenes_merged.mp4"
+    output_path = "outputs/all_scenes_result_l618_trt.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     # print((width, height))
     video.write(first_image)
     while True:
-        time.sleep(1/30)#模拟下实时流，30fps
+        # time.sleep(1/30)#模拟下实时流，30fps
         frame = output_queue.get()
         if not frame.stops:
             # if len(frame.boxes) != 0:

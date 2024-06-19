@@ -16,6 +16,8 @@ models/*
 !yolov8n-pose.pt
 !yolov8l20240618.pt
 !yolov8m618.pt
+!*.onnx
+!*.engine
 ./images/
 *.txt
 *.cache

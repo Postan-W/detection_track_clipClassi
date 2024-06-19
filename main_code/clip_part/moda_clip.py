@@ -20,10 +20,10 @@ def local_img():
                    "有人从障碍物旁边走过", "画面里没有人"]
 
     # 支持一张图片(PIL.Image)或多张图片(List[PIL.Image])输入，输出归一化特征向量
-    img_embedding = pipeline.forward({'img': input_img})['img_embedding']  # 2D Tensor, [图片数, 特征维度]
+    img_embedding = pipeline.forward({'img': input_img})['img_embedding']
 
     # 支持一条文本(str)或多条文本(List[str])输入，输出归一化特征向量
-    text_embedding = pipeline.forward({'text': input_texts})['text_embedding']  # 2D Tensor, [文本数, 特征维度]
+    text_embedding = pipeline.forward({'text': input_texts})['text_embedding']
 
     # 计算图文相似度
     with torch.no_grad():
@@ -39,7 +39,7 @@ def local_img():
 
 def crop_by_ultralytics(image_path):
     yolo_model = YOLO("../weights/yolov8l20240618.pt")
-    result = yolo_model(image_path, save=True,classes=[1],conf=0.3)[0]
+    result = yolo_model(image_path, save=False,classes=[1],conf=0.3)[0]
     boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,]]
     print("初始:boxes:{}".format(boxes))
     if not len(boxes) == 0:
@@ -52,17 +52,17 @@ def crop_by_ultralytics(image_path):
             rgb_image = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
             pil_image = Image.fromarray(rgb_image)
             clip_input.append(pil_image)
-            # pil_image.show()
+            pil_image.show()
         #这句话在正式代码中放最外层
         input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬", "有人笔直地站着", "人笔直通过障碍物",
-                       "有人从障碍物旁边走过", "画面里没有人"]
+                       "有人从障碍物旁边走过", "画面里没有人","有人低头看手机"]
 
         # 支持一张图片(PIL.Image)或多张图片(List[PIL.Image])输入，输出归一化特征向量
         img_embedding = pipeline.forward({'img': clip_input})['img_embedding']  # 2D Tensor, [图片数, 特征维度]
 
         #这句话在正式代码中放最外层
         # 支持一条文本(str)或多条文本(List[str])输入，输出归一化特征向量
-        text_embedding = pipeline.forward({'text': input_texts})['text_embedding']  # 2D Tensor, [文本数, 特征维度]
+        text_embedding = pipeline.forward({'text': input_texts})['text_embedding']
 
         # 计算图文相似度
         with torch.no_grad():
@@ -81,9 +81,9 @@ def crop_by_ultralytics(image_path):
             print(target_prob,residual_prob)
             if target_prob > residual_prob:
                 final_boxes.append(list(boxes[i]))
-        print("final boxes:{}".format(final_boxes))
+        # print("final boxes:{}".format(final_boxes))
 
 
 
 
-crop_by_ultralytics("../../subway_images/train/images/pj5_75.jpg")
+crop_by_ultralytics("C:/Users/wmingdru/Desktop/subway_images/train/images/allscenes10_75.jpg")
