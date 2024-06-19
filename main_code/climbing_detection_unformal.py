@@ -72,8 +72,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/output/merged_video618_3.mp4"
-    output_path = "outputs/1.mp4"
+    video_path = "../videos/pj1.mp4"
+    output_path = "outputs/temp.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
