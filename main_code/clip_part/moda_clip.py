@@ -1,13 +1,22 @@
 # require modelscope>=0.3.7，目前默认已经超过，您检查一下即可
 # 按照更新镜像的方法处理或者下面的方法
 # pip install --upgrade modelscope -f https://modelscope.oss-cn-beijing.aliyuncs.com/releases/repo.html
-# 需要单独安装decord，安装方法：pip install decord
+# 需要单独安装decord，安装方法：
+"""
+modelscope
+decord
+timm
+librosa
+fairseq 会安装torch
+"""
 import torch
 from modelscope.utils.constant import Tasks
 from modelscope.pipelines import pipeline
 from modelscope.preprocessors.image import load_image
 from ultralytics import YOLO
 import numpy as np
+import os
+os.environ['MODELSCOPE_CACHE'] = "../models/"#指定模型存放地点
 from PIL import Image
 import cv2
 pipeline = pipeline(task=Tasks.multi_modal_embedding,
