@@ -124,7 +124,7 @@ if __name__ == '__main__':
     climbing_detection.start()
     first_image = output_queue.get().data
     height, width, _ = first_image.shape
-    video = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'DIVX'), 30, (width, height))
+    video = cv2.VideoWriter(output_path,cv2.VideoWriter_fourcc(*'DIVX'), 30, (width, height))
     # print((width, height))
     video.write(first_image)
     while True:
