@@ -4,6 +4,7 @@ This script converts PyTorch implemented Chinese-CLIP (text or vision) model to 
 """
 
 import os
+os.environ["PYTHONPATH"] = os.pathsep.join([os.environ["PYTHONPATH"],"../../cn_clip"])
 import argparse
 from PIL import Image
 import torch
@@ -16,8 +17,8 @@ from clip.utils import _MODELS, _MODEL_INFO, _download, available_models, create
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--model-arch", 
-        required=True, 
+        "--model-arch",
+        default= "ViT-L-14-336",
         choices=["ViT-B-16", "ViT-L-14", "ViT-L-14-336", "ViT-H-14", "RN50"],
         help="Specify the architecture (model scale) of Chinese-CLIP model to be converted."
     )
