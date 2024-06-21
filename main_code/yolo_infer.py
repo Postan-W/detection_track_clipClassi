@@ -6,9 +6,13 @@ def get_model(path):
     print("模型检测的目标是:{}".format(model.names))
     return model
 
-model_path = "./weights/yolov8l20240618.engine"
+model_path = "./weights/yolov8m.engine"
 input = "../videos/output/merged_video.mp4"
-get_model(model_path)
+model = get_model(model_path)
+img = "../temp_images/img.png"
+result = model.track(persist=True,source=img,tracker="./track_config/botsort.yaml",classes=[0],conf=0.3,iou=0.7)[0]
+boxes = result.boxes.data.numpy()
+print(boxes[:,4].tolist())
 def get_detected_output(model,input,classes,conf=0.65,imgsz=640,iou=0.7,device="cuda",save_frames=False):
     """
     :param model:
