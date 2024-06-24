@@ -102,7 +102,7 @@ class ClimbingDetection:
                         if target_prob > residual_prob:
                             final_boxes.append(list(frame.boxes[i]))
                     frame.boxes = final_boxes#更新boxes
-                    plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="climb")#画框
+                    plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="fall")#画框
 
                 self.id_update(frame)
                 self.output_queue.put(frame)

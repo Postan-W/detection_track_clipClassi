@@ -1,5 +1,5 @@
 from ultralytics import YOLO
-model = YOLO("../weights/fall_yolov8m_20240624.engine")
+model = YOLO("../weights/fall_yolov8m_50epoch_20240624.engine")
 print("类别有:{}".format(model.names))
 
 if __name__ == "__main__":
