@@ -1,3 +1,4 @@
+import numpy as np
 
 
 def get_model(path):
@@ -12,7 +13,9 @@ model = get_model(model_path)
 img = "../temp_images/img.png"
 result = model.track(persist=True,source=img,tracker="./track_config/botsort.yaml",classes=[0],conf=0.3,iou=0.7)[0]
 boxes = result.boxes.data.numpy()
-print(boxes[:,4].tolist())
+print(boxes)
+print(boxes.tolist())
+print(np.array(boxes.tolist()))
 def get_detected_output(model,input,classes,conf=0.65,imgsz=640,iou=0.7,device="cuda",save_frames=False):
     """
     :param model:
