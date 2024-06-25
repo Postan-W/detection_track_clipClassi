@@ -15,7 +15,7 @@ from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 import os
 os.environ["MODELSCOPE_CACHE"] = "./models/"
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l20240618.engine",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climbing_80epoch_yolov8m20240625.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
     video_path = "../videos/output/allscenes_merged.mp4"
-    output_path = "outputs/allscenes_result_l618_trt_with_clip2.mp4"
+    output_path = "outputs/allscenes_result_80epoch_yolov8m_clip.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
