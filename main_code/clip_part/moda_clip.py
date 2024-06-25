@@ -91,6 +91,7 @@ def crop_by_ultralytics(image_path):
             print(target_prob,residual_prob)
             if target_prob > residual_prob:
                 final_boxes.append(list(boxes[i]))
+
         print("final boxes:{}".format(final_boxes))
 
 

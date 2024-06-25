@@ -28,3 +28,4 @@ main_code/models/
 !subway_images/val/images/*.jpg
 !subway_images/val/labels/*.txt
 !main_code/clip_images/*.jpg
+*/runs/*
