@@ -73,7 +73,7 @@ if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
     video_path = "../videos/output/allscenes_merged.mp4"
-    output_path = "outputs/all_scenes_20240625_climb2.mp4"
+    output_path = "outputs/all_scenes_20240625_climb.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_reader.start()

@@ -119,6 +119,7 @@ if __name__ == '__main__':
     video_path = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/test_video_20240624/merged/merged2.mp4"
     output_path = "./with_clip.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
+    total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
     climbing_detection.start()
@@ -127,6 +128,7 @@ if __name__ == '__main__':
     video = cv2.VideoWriter(output_path,cv2.VideoWriter_fourcc(*'DIVX'), 30, (width, height))
     # print((width, height))
     video.write(first_image)
+    processed_count = 0
     while True:
         # time.sleep(1/30)#模拟下实时流，30fps
         frame = output_queue.get()
@@ -138,6 +140,8 @@ if __name__ == '__main__':
             #         logger.info("有人翻越闸机，但无需重复报警")
 
             video.write(frame.data)
+            processed_count += 1
+            print("{}/{},{}%".format(processed_count, total_frames, round((processed_count / total_frames) * 100, 2)))
         else:
             video.release()
             break
