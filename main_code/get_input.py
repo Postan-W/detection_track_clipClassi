@@ -10,22 +10,22 @@ class VideoReader:
         self.thread = Thread(target=self.task)
         self.queue = image_queue
         self.timestep = timestep
+        self.cap = cv2.VideoCapture(self.path)
 
     def task(self):
-        cap = cv2.VideoCapture(self.path)
-        ret, frame = cap.read()
+        ret, frame = self.cap.read()
         count = 1
         while ret:
             if count % self.timestep == 0 and ret:
                 self.queue.put(Frame(data=frame))
-            ret, frame = cap.read()
+            ret, frame = self.cap.read()
             count += 1
 
         logger.info("视频抽帧已完成")
         self.queue.put(Frame(stops=True))#终止指示帧
 
 
-        cap.release()
+        self.cap.release()
         cv2.destroyAllWindows()
 
     def start(self):

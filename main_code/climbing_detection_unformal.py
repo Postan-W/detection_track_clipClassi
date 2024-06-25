@@ -5,9 +5,9 @@ from threading import Thread
 from myutils.public_logger import logger
 import cv2
 import time
-
+import tqdm
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climbing_80epoch_yolov8m20240625.engine",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climb_yolov8l_80epoch_batch64_old_data_20240625.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -54,7 +54,7 @@ class ClimbingDetection:
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
-                result = self.yolo_model.track(persist=True,verbose=True,source=frame.data,tracker=self.track_config,classes=[1],conf=0.32,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.32,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
@@ -73,8 +73,9 @@ if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
     video_path = "../videos/output/allscenes_merged.mp4"
-    output_path = "outputs/all_scenes_20240625_80epoch_old_train_data.mp4"
+    output_path = "outputs/all_scenes_20240625_climb2.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
+    total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
     climbing_detection.start()
@@ -83,6 +84,7 @@ if __name__ == '__main__':
     video = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'DIVX'), 30, (width, height))
     # print((width, height))
     video.write(first_image)
+    processed_count = 0
     while True:
         # time.sleep(1/30)#模拟下实时流，30fps
         frame = output_queue.get()
@@ -94,6 +96,8 @@ if __name__ == '__main__':
             #         logger.info("有人翻越闸机，但无需重复报警")
 
             video.write(frame.data)
+            processed_count += 1
+            print("{}/{},{}%".format(processed_count,total_frames,round((processed_count / total_frames)*100, 2)))
         else:
             video.release()
             break

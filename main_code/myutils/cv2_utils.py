@@ -12,6 +12,8 @@ def np_to_str(image_np):
     pic_str = pic_str.decode()
     return pic_str
 
+#获取视频总帧数
+
 def str_to_np(img_str):
     """
     将图片流转换为numpy数组
