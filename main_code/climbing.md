@@ -6,7 +6,7 @@
 
 - **数据**
 
-  设置了两类normal_pass和unnormal_pass。使用了472张图片训练，157张图片验证，每张图片有1-2个目标，总体目标normal和unnormal的比值大概是6:4，接近7:3，所以说unnormal的比重较小，下次标注训练时要平衡下。
+  设置了两类normal_pass和unnormal_pass(标注的内容是人和闸机，即人正常通过闸机和翻越通过闸机)。使用了472张图片训练，157张图片验证，每张图片有1-2个目标，总体目标normal和unnormal的比值大概是6:4，接近7:3，所以说unnormal的比重较小，下次标注训练时要平衡下。
 
 - **模型**
 
@@ -54,6 +54,10 @@
 
 ​		数据更差，看来是标注问题，数据标的可能没2024/6/6好。
 
+### 1.1.4 2024/06/25
+
+使用2024/06/19的数据再训练一次，batch=32,epoch=80。
+
 
 
 # 2.目标追踪
@@ -62,11 +66,15 @@
 
 ## 2.2 使用ultralytics提供的追踪器
 
+目前使用的就是这个
+
 # 3.分类器
 
 ## 3.1CLIP分类器
 
-metaclip效果不错，但模型太大
+metaclip效果不错，但模型太大；
+
+目前使用的是moda社区的Chinese clip，https://www.modelscope.cn/models/iic/multi-modal_clip-vit-large-patch14_336_zh/files
 
 ## 3.2 使用ultralytics提供的pose检测然后进行分类
 

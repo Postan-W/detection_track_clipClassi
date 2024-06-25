@@ -7,7 +7,7 @@ import cv2
 import time
 
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/yolov8l20240618.engine",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climbing_80epoch_yolov8m20240625.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
     video_path = "../videos/output/allscenes_merged.mp4"
-    output_path = "outputs/all_scenes_result_l618_trt.mp4"
+    output_path = "outputs/all_scenes_20240625_80epoch_old_train_data.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     video_reader.start()
     climbing_detection = ClimbingDetection(input_queue,output_queue)
