@@ -113,4 +113,4 @@ input_texts_fall = ["有人躺在地上", "有人摔倒在地上","有人躺在�
 target_texts_climb = 3
 target_texts_fall = 5
 # crop_by_ultralytics(image_path="../clip_images/shoufuti.png",model_path="../weights/yolov8l.pt",input_texts=input_texts_fall,target_texts=target_texts_fall,classes=[0],conf=0.7)
-crop_by_ultralytics(image_path="../clip_images/climb_wubao_1.jpg",model_path="../weights/climb_yolov8l_80epoch_batch64_old_data_20240625.pt",input_texts=input_texts_climb,target_texts=target_texts_climb,classes=[1],conf=0.25)
+crop_by_ultralytics(image_path="../clip_images/climb_wubao_2.jpg",model_path="../weights/climb_yolov8l_80epoch_batch64_old_data_20240625.pt",input_texts=input_texts_climb,target_texts=target_texts_climb,classes=[1],conf=0.25)
