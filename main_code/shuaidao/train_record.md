@@ -24,7 +24,7 @@ epoch=100
 
 基础模型选用yolov8l.pt(甚至可以选用更大的)，212机器上有8张GPU。
 
-设置了4种类别，即蹲下squat(其中坐也归为squat)、摔倒fall、站立stand、弯腰bend。
+设置了4种类别，即蹲下squat、摔倒fall、站立stand、弯腰bend、坐sit。
 
 
 

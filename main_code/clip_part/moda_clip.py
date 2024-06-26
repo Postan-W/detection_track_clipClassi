@@ -73,9 +73,9 @@ def crop_by_ultralytics(image_path):
         #这句话在正式代码中放最外层
         input_texts = ["有人双手支撑在地铁进站门上,跳起", "有人翻越地铁进站门","有人笔直地站在地铁进站门附近", "人笔直走过地铁进站门",
                        "有人从障碍物旁边走过", "画面里没有人,只有地铁进站门"]
-        input_texts = ["有人躺在地上", "有人摔倒在地上","有人躺在地上睡觉", "有人在楼梯上摔倒了","有人在上楼梯","有人在下楼梯","有人站在手扶电梯上","有人坐在地上","画面里没有人", "鞋子在地上",
+        input_texts = ["有人躺在地上", "有人摔倒在地上","有人躺在地上睡觉", "有人在楼梯上摔倒了","有人在手扶电梯上摔倒了","有人在上楼梯","有人在下楼梯","有人站在手扶电梯上","有人站在楼梯上","有人蹲在手扶电梯上","有人蹲在楼梯上","有人坐在手扶电梯上","有人坐在楼梯上","有人坐在地上","有人坐在椅子上","画面里没有人", "鞋子在地上",
                    "箱子在地上", "毯子在地上","一块布在地上","画面漆黑没有人","有人在行走","有人在站着","有人在蹲着","有人在蹲着玩手机","有人在修理东西"]
-        target_texts = 4#目标text是前n=2个
+        target_texts = 5#目标text是前n=5个
 
         # 支持一张图片(PIL.Image)或多张图片(List[PIL.Image])输入，输出归一化特征向量
         img_embedding = pipeline.forward({'img': clip_input})['img_embedding'] #2D Tensor, [图片数, 特征维度]
@@ -95,7 +95,11 @@ def crop_by_ultralytics(image_path):
             clean_result.append([round(i, 2) for i in img_result])
         # print("图文匹配概率:", clean_result)
         for i,prob in enumerate(clean_result):
-            print(i,prob)
+            # print(i,prob)
+            result_dict = {}
+            for j,p in enumerate(prob):
+                result_dict[p] = input_texts[j]
+            print(result_dict)
             target_prob = sum(prob[:target_texts])
             residual_prob = sum(prob[target_texts:])
             print(target_prob,residual_prob)
@@ -107,4 +111,4 @@ def crop_by_ultralytics(image_path):
 
 
 
-crop_by_ultralytics("../clip_images/shuaidao1.png")
+crop_by_ultralytics("../clip_images/shoufuti.png")

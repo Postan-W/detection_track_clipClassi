@@ -25,9 +25,9 @@ class ClimbingDetection:
         #clip模型暂时成固定的
         self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
-        self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬","有人拿着衣服走过通道", "人的腿被障碍物完全挡住了","有人笔直地站着", "人笔直通过障碍物",
+        self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬","有人支撑在障碍物上跳跃","有人拿着衣服走过通道", "人的腿被障碍物完全挡住了","有人笔直地站着", "人笔直通过障碍物",
                    "有人从障碍物旁边走过", "画面里没有人","人的手没有触碰障碍物"]
-        self.target_texts = 2#目标text是前n=2个
+        self.target_texts = 3#目标text是前n=2个
         self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 
     def id_update(self,frame,threshhold:int=5):
