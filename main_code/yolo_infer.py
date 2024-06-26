@@ -10,7 +10,7 @@ def get_model(path):
 model_path = "./weights/yolov8m.engine"
 input = "../videos/output/merged_video.mp4"
 model = get_model(model_path)
-img = "../temp_images/img.png"
+img = "../temp_images/dunzhe1.png"
 result = model.track(persist=True,source=img,tracker="./track_config/botsort.yaml",classes=[0],conf=0.3,iou=0.7)[0]
 boxes = result.boxes.data.numpy()
 print(boxes)

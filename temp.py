@@ -1,7 +1,5 @@
 from tqdm import tqdm
 import time
 
-l = range(10)
-for i in tqdm(l):
-    time.sleep(1)
-    print(i)
+s = "C:\Users\wmingdru\Desktop\workspace\projects\detection_track_clipClassi\videos\shuaidao1.mp4".replace("\\","/")
+print(s)

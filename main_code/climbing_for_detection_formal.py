@@ -25,8 +25,8 @@ class ClimbingDetection:
         #clip模型暂时成固定的
         self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
-        self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬", "有人笔直地站着", "人笔直通过障碍物",
-                   "有人从障碍物旁边走过", "画面里没有人"]
+        self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬","有人拿着衣服走过通道", "人的腿被障碍物完全挡住了","有人笔直地站着", "人笔直通过障碍物",
+                   "有人从障碍物旁边走过", "画面里没有人","人的手没有触碰障碍物"]
         self.target_texts = 2#目标text是前n=2个
         self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 
@@ -77,10 +77,17 @@ class ClimbingDetection:
                 # frame.data = result.plot()
                 if not len(frame.boxes) == 0:
                     final_boxes = []
-
                     clip_input = []
+                    frame_height, frame_width, _ = frame.data.shape
+                    # hwc
+                    padding_y = int(frame_height / 10)  # box高度增加1/5
+                    padding_x = int(frame_width / 10)  # box宽度增加1/5
                     for box in frame.boxes:
                         x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
+                        x1 = x1 - padding_x if (x1 - padding_x) > 0 else 0
+                        y1 = y1 - padding_y if (y1 - padding_y) > 0 else 0
+                        x2 = x2 + padding_x if (x2 + padding_x) < frame_width else frame_width
+                        y2 = y2 + padding_y if (y2 + padding_y) < frame_height else frame_height
                         croped = frame.data[y1:y2, x1:x2, :]
                         rgb_image = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
                         pil_image = Image.fromarray(rgb_image)
@@ -117,8 +124,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/output/allscenes_merged.mp4"
-    output_path = "outputs/all_scenes_20240625_climb_clip.mp4"
+    video_path = "../videos/wubao.mp4"
+    output_path = "outputs/wubao1.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_reader.start()
