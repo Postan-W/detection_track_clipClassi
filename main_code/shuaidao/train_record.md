@@ -34,5 +34,7 @@ sit
 
 训练图片一共379张"C:\Users\wmingdru\Desktop\workspace\data\shuaidao\train_images_20240625\train\images"
 
+**推理时置信度注意调高一点，因为躺下的特征很明显，不怕被pass掉，反而应该防止误报，设为0.75。**
+
 
 

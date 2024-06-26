@@ -30,4 +30,3 @@ class VideoReader:
 
     def start(self):
         self.thread.start()
-

@@ -15,7 +15,7 @@ from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 import os
 os.environ["MODELSCOPE_CACHE"] = "./models/"
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climbing_80epoch_yolov8m20240625.engine",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climb_yolov8l_80epoch_batch64_old_data_20240625.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -27,7 +27,7 @@ class ClimbingDetection:
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
         self.input_texts = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬","有人支撑在障碍物上跳跃","有人拿着衣服走过通道", "人的腿被障碍物完全挡住了","有人笔直地站着", "人笔直通过障碍物",
                    "有人从障碍物旁边走过", "画面里没有人","人的手没有触碰障碍物"]
-        self.target_texts = 3#目标text是前n=2个
+        self.target_texts = 3#目标text是前n=3个
         self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 
     def id_update(self,frame,threshhold:int=5):
@@ -124,8 +124,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/wubao.mp4"
-    output_path = "outputs/wubao1.mp4"
+    video_path = "../videos/fanyue_wubao.mp4"
+    output_path = "outputs/fanyue_wubao_output.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_reader.start()
