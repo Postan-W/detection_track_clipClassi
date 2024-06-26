@@ -72,7 +72,7 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/wubao.mp4"
+    video_path = "C:/Users/wmingdru/Desktop/workspace/projects/detection_track_clipClassi/videos/fanyue_wubao.mp4"
     output_path = "outputs/wubao2.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
