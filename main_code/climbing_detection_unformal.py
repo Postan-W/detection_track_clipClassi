@@ -5,7 +5,6 @@ from threading import Thread
 from myutils.public_logger import logger
 import cv2
 import time
-import tqdm
 class ClimbingDetection:
     def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climb_yolov8l_80epoch_batch64_old_data_20240625.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)

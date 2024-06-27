@@ -1,4 +1,4 @@
-from ultralytics import YOLO
+
 from get_input import VideoReader
 from queue import Queue
 from threading import Thread
@@ -13,6 +13,7 @@ import time
 from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 import os
 os.environ["MODELSCOPE_CACHE"] = "../models/"
+
 class FallDetection:
     def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="../weights/fall_yolov8l_20240626.engine",track_config="../track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
