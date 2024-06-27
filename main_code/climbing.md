@@ -78,7 +78,7 @@ fall 躺地
 
 climb 翻
 
-
+bend 弯腰
 
 # 2.目标追踪
 
