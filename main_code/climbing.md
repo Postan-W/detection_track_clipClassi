@@ -70,15 +70,27 @@
 
 stand站
 
-sit 坐
-
 squat 蹲
+
+bend 弯腰
 
 fall 躺地
 
-climb 翻
+sit 坐
 
-bend 弯腰
+climb 翻越
+
+本模型也可用于跌倒检测那个功能。
+
+**数据**
+
+212：/home/ai/wmz/climbing/train_val_202040628 
+
+本地："C:\Users\wmingdru\Desktop\workspace\data\temp_material\train_val_202040628"
+
+**模型**
+
+预训练模型yolov8l.pt
 
 # 2.目标追踪
 
