@@ -1,7 +1,6 @@
 import cv2
 import os
 
-
 def get_source(rootpath:str,source_format:list=["mp4"]):
     source_list = [i for i in os.listdir(rootpath) if i.split(".")[1] in source_format]
     return [os.path.join(rootpath,i) for i in source_list]
@@ -29,7 +28,9 @@ def get_images(videopath,destination,step = 5,current_video_index=0,total_video_
 
 destination = "C:/Users/wmingdru/Desktop/workspace/data/temp_material/train_val/val/images/"
 videos = get_source("C:/Users/wmingdru/Desktop/workspace/data/temp_material/val_videos/")
+
+total_video_num = len(videos)
 for i,videopath in enumerate(videos):
-    get_images(videopath,destination,step=15,current_video_index=i+1,total_video_num=len(videos))
+    get_images(videopath,destination,step=15,current_video_index=i+1,total_video_num=total_video_num)
 
 # get_images("./main_code/videos/positive1.mp4",destination="./main_code/images/",step=10)

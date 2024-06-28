@@ -26,7 +26,7 @@ class FallDetection:
         self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
         self.input_texts = ["有人躺在地上", "有人摔倒在地上","有人躺在地上睡觉","有人在楼梯上摔倒了","有人在手扶电梯上摔倒了","有人在上楼梯","有人在下楼梯","有人站在手扶电梯上","有人站在楼梯上","有人蹲在手扶电梯上","有人蹲在楼梯上","有人坐在手扶电梯上","有人坐在楼梯上","有人坐在地上","有人坐在椅子上","画面里没有人", "鞋子在地上",
-                   "箱子在地上", "毯子在地上","一块布在地上","画面漆黑没有人","有人在行走","有人在站着","有人在蹲着","有人在蹲着玩手机","有人在修理东西"]
+                   "箱子在地上", "毯子在地上","一块布在地上","画面里有个物体不是人","有人在行走","有人在站着","有人在蹲着","有人在蹲着玩手机","有人在修理东西"]
         self.target_texts = 5#目标text是前n=3个
         self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 

@@ -48,7 +48,7 @@ def local_img():
 
 def crop_by_ultralytics(image_path,model_path,input_texts,target_texts,classes,conf):
     yolo_model = YOLO(model_path)
-    result = yolo_model(image_path, save=False,classes=classes,conf=conf)[0]
+    result = yolo_model(image_path, save=True,classes=classes,conf=conf)[0]
     boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,]]
     print("初始:boxes:{}".format(boxes))
     if not len(boxes) == 0:
@@ -108,9 +108,11 @@ def crop_by_ultralytics(image_path,model_path,input_texts,target_texts,classes,c
 
 input_texts_climb = ["有人在弯腰翻越障碍物", "有人双手支撑在障碍物上攀爬","有人支撑在障碍物上跳跃","有人拿着衣服走过通道", "人的腿被障碍物完全挡住了","有人笔直地站着", "人笔直通过障碍物",
                    "有人从障碍物旁边走过", "画面里没有人","人的手没有触碰障碍物"]
-input_texts_fall = ["有人躺在地上", "有人摔倒在地上","有人躺在地上睡觉", "有人在楼梯上摔倒了","有人在手扶电梯上摔倒了","有人在上楼梯","有人在下楼梯","有人站在手扶电梯上","有人站在楼梯上","有人蹲在手扶电梯上","有人蹲在楼梯上","有人坐在手扶电梯上","有人坐在楼梯上","有人坐在地上","有人坐在椅子上","画面里没有人", "鞋子在地上",
-           "箱子在地上", "毯子在地上","一块布在地上","画面漆黑没有人","有人在行走","有人在站着","有人在蹲着","有人在蹲着玩手机","有人在修理东西"]
+input_texts_fall = ["有人躺在地上", "有人摔倒在地上","有人躺在地上睡觉","有人在楼梯上摔倒了","有人在手扶电梯上摔倒了","有人在上楼梯","有人在下楼梯","有人站在手扶电梯上","有人站在楼梯上","有人蹲在手扶电梯上","有人蹲在楼梯上","有人坐在手扶电梯上","有人坐在楼梯上","有人坐在地上","有人坐在椅子上","画面里没有人", "鞋子在地上",
+                   "箱子在地上", "毯子在地上","一块布在地上","画面里有个物体不是人","有人在行走","有人在站着","有人在蹲着","有人在蹲着玩手机","有人在修理东西"]
+input_texts_fall2 = ["有人躺在地上", "有人摔倒在地上","有人躺在地上睡觉","有人在楼梯上摔倒了","有人在手扶电梯上摔倒了","有人在上楼梯","有人在下楼梯","有人站在手扶电梯上","有人站在楼梯上","有人蹲在手扶电梯上","有人蹲在楼梯上","有人坐在手扶电梯上","有人坐在楼梯上","有人坐在地上","有人坐在椅子上","画面里没有人", "鞋子在地上",
+                   "箱子在地上", "毯子在地上","一块布在地上","画面漆黑没有人","有人在行走","有人在站着","有人在蹲着","有人在蹲着玩手机","有人在修理东西"]
 target_texts_climb = 3
 target_texts_fall = 5
-# crop_by_ultralytics(image_path="../clip_images/shoufuti.png",model_path="../weights/yolov8l.pt",input_texts=input_texts_fall,target_texts=target_texts_fall,classes=[0],conf=0.7)
-crop_by_ultralytics(image_path="../clip_images/climb_wubao_2.jpg",model_path="../weights/climb_yolov8l_80epoch_batch64_old_data_20240625.pt",input_texts=input_texts_climb,target_texts=target_texts_climb,classes=[1],conf=0.25)
+crop_by_ultralytics(image_path="../clip_images/shuaidao_wubao2.png",model_path="../weights/fall_yolov8l_20240626.engine",input_texts=input_texts_fall,target_texts=target_texts_fall,classes=[3],conf=0.75)
+# crop_by_ultralytics(image_path="../clip_images/climb_wubao_2.jpg",model_path="../weights/climb_yolov8l_80epoch_batch64_old_data_20240625.pt",input_texts=input_texts_climb,target_texts=target_texts_climb,classes=[1],conf=0.25)
