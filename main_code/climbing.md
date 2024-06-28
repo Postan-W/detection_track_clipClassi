@@ -92,6 +92,8 @@ climb 翻越
 
 预训练模型yolov8l.pt
 
+![image-20240628174821319](climbing.assets/image-20240628174821319.png)
+
 # 2.目标追踪
 
 ## 2.1使用boxmot
