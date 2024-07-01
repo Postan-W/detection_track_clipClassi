@@ -60,6 +60,15 @@ def plot_boxes_with_text(boxes, img, color=[100,100,100], text_info="None",veloc
        cv2.putText(img, text_info, (c1[0], c1[1] + t_size[1] + 2),cv2.FONT_HERSHEY_TRIPLEX, fontsize,color=[255, 255, 255], thickness=fontthickness)
    return img
 
+def plot_boxes_with_text_single_box(box, img, color=[0,0,255], text_info="None",velocity=None, thickness=1, fontsize=0.5, fontthickness=1):
+    # Plots bounding boxes on image img
+   c1, c2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
+   cv2.rectangle(img, c1, c2, color, thickness, lineType=cv2.LINE_AA)
+   t_size = cv2.getTextSize(text_info, cv2.FONT_HERSHEY_TRIPLEX, fontsize, fontthickness + 2)[0]
+   cv2.rectangle(img, c1, (c1[0] + int(t_size[0]), c1[1] + int(t_size[1] * 1.45)), color, -1)
+   cv2.putText(img, text_info, (c1[0], c1[1] + t_size[1] + 2),cv2.FONT_HERSHEY_TRIPLEX, fontsize,color=[255, 255, 255], thickness=fontthickness)
+   return img
+
 def plot_boxes_with_text_for_yolotrack(boxes, img, color=[102, 170, 238],class_name="",velocity=None, thickness=2, fontsize=0.5, fontthickness=1):
     # Plots bounding boxes on image img
    for x in boxes:

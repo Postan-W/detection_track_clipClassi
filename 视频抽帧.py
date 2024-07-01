@@ -33,4 +33,17 @@ total_video_num = len(videos)
 for i,videopath in enumerate(videos):
     get_images(videopath,destination,step=15,current_video_index=i+1,total_video_num=total_video_num)
 
-# get_images("./main_code/videos/positive1.mp4",destination="./main_code/images/",step=10)
+
+def single_video():
+    cap = cv2.VideoCapture("videos/fanyue/new_fanyue.avi")
+    ret, frame = cap.read()
+    destination = "C:/Users/wmingdru/Desktop/new_fanyue"
+    count = 1
+    while ret:
+        if count % 2 == 0 and ret:
+            filename = os.path.join(destination, "new_fanyue" + "_" + str(count) + ".jpg")
+            cv2.imwrite(filename, frame)
+        ret, frame = cap.read()
+        count += 1
+    cap.release()
+    cv2.destroyAllWindows()

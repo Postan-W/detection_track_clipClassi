@@ -6,6 +6,7 @@ output_path = "./videos/output/fanyue_merged.mp4"
 
 videos = glob.glob(video_dir+"*.mp4")
 
+
 # 创建视频剪辑列表
 video_clips = [VideoFileClip(video) for video in videos]
 
