@@ -1,21 +1,44 @@
+#Author wmingzhu
+#Date 20240701
+
 from ultralytics import YOLO
 import cv2
 from myutils.cv2_utils import plot_boxes_with_text_single_box
+import os
+
+model = YOLO("../weights/yolov8l-pose.pt")
+action_list = ["stand","sit","fall","squat","bend","climb","straddle"]
+video_path = "../../videos/fanyue/new_fanyue.avi"
+output_path = "./data/train.txt"
 def input_action(xyn=None):
     """
     :param xyn: [x1,y1,x2,y2...,x17,y17]
     :return:
     """
     action = ""
-    while not action in ["stand","sit","fall","squat","bend","climb","straddle","p"]:#p代表不为当前box标注
+    while not action in (action_list + ["p"]):#p代表不为当前box标注
         action = input("输入动作名称:")
     print("标签是:{}".format(action))
     return action
 
 
-model = YOLO("../weights/yolov8l-pose.pt")
-video_path = "../../videos/fanyue/new_fanyue.avi"
-output_path = "./data/train.txt"
+#为了方便中断标注后，再次标注时也能够了解当前各个类别已经标注了多少个
+def load_action_counter(data_path,action_list):
+    action_counter = {i: 0 for i in action_list}
+
+    with open(data_path, 'r') as f:
+        for line in f:
+            action = line.strip().split(",")[0]
+            try:
+                action_counter[action] += 1
+            except:
+                action_counter[action] = 0
+
+    return action_counter
+
+action_counter = load_action_counter(output_path,action_list) if os.path.exists(output_path) else {i: 0 for i in action_list}
+print("已标注:{}".format(action_counter))
+
 cap = cv2.VideoCapture(video_path)
 ret,frame = cap.read()
 count = 1
@@ -37,6 +60,8 @@ with open(output_path, 'a') as f:
                         cv2.destroyAllWindows()
                         continue
                     else:
+                        action_counter[action] += 1
+                        print(action_counter)
                         keypoints = ",".join([str(i) for i in xyn[i].flatten()])
                         f.write(action+","+keypoints+"\n")
 
