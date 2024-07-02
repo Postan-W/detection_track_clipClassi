@@ -3,9 +3,8 @@ from ultralytics import YOLO
 model = YOLO("../weights/yolov8l-pose.pt")  # load an official model
 
 print(model.names)#人体姿势估计，检测的对象只有人
-source_path = "../clip_images/pj1_120.jpg"
 # Predict with the model
-results = model.track("../clip_images/dog.jpeg",save=True,persist=True,tracker="../track_config/botsort.yaml")
+results = model.track("../clip_images/shuaidao_wubao1.png",save=True,persist=True,tracker="../track_config/botsort.yaml")
 result = results[0]
 orig_shape = result.orig_img.shape #hwc
 #xy->(0，0)意味着关键点置信度过低或者根本不可见所以没检测到

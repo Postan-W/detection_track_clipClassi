@@ -5,7 +5,7 @@ import random
 import shutil
 
 image_path = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/train_images_20240625/train/images/"
-destination = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/train_images_20240625/val/images/"
+destination = "C:/Users/wmingdru/Desktop/workspace/train_data/shuaidao/train_images_20240625/val/images/"
 
 image_path = [os.path.join(image_path,image) for image in os.listdir(image_path)]
 

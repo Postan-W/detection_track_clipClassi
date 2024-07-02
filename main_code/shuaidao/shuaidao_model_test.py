@@ -76,7 +76,7 @@ class FallDetection:
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
                 #     print(track_id,frame.boxes)
-                # frame.data = result.plot()
+                # frame.train_data = result.plot()
                 if not len(frame.boxes) == 0:
                     final_boxes = []
                     clip_input = []

@@ -3,18 +3,15 @@
 
 from ultralytics import YOLO
 import cv2
-from myutils.cv2_utils import plot_boxes_with_text_single_box
+from pose_utils import plot_boxes_with_text_single_box,keypoints_filter
 import os
+from pose_data_structure import action_list
 
 model = YOLO("../weights/yolov8l-pose.pt")
-action_list = ["stand","sit","fall","squat","bend","climb","straddle"]
 video_path = "../../videos/fanyue/new_fanyue.avi"
-output_path = "./data/train.txt"
-def input_action(xyn=None):
-    """
-    :param xyn: [x1,y1,x2,y2...,x17,y17]
-    :return:
-    """
+output_path = "train_data/train.txt"
+
+def input_action():
     action = ""
     while not action in (action_list + ["p"]):#p代表不为当前box标注
         action = input("输入动作名称:")
@@ -44,13 +41,13 @@ ret,frame = cap.read()
 count = 1
 with open(output_path, 'a') as f:
     while ret:
-        if count % 15 == 0:  # 每n帧标注一帧
-            result = model.track(frame, save=False, verbose=False, persist=True, tracker="../track_config/botsort.yaml")[0]
+        if count % 15 == 0:  # 跳帧标注
+            result = model.track(frame, save=False,verbose=False,persist=True,tracker="../track_config/botsort.yaml")[0]
             boxes = result.boxes.data.cpu().numpy()
             xyn = result.keypoints.xyn.cpu().numpy()
             if not len(boxes) == 0:
                 for i, box in enumerate(boxes):
-                    text_info = "index:" + str(i)  # index最大的那个就是当前要标注的那个box(cv2.imshow的标题也会提示当前是哪个box)
+                    text_info = "index:" + str(i)  #index最大的那个就是当前要标注的那个box(cv2.imshow的标题也会提示当前是哪个box)
                     plot_boxes_with_text_single_box(box, frame, text_info=text_info)
                     cv2.imshow("current box:{}".format(i), frame)
                     cv2.waitKey(0)
@@ -62,8 +59,12 @@ with open(output_path, 'a') as f:
                     else:
                         action_counter[action] += 1
                         print(action_counter)
-                        keypoints = ",".join([str(i) for i in xyn[i].flatten()])
-                        f.write(action+","+keypoints+"\n")
+                        keypoints = xyn[i]
+                        #过滤
+                        if keypoints_filter(keypoints):
+                            keypoints = [str(i) for i in keypoints[3:].flatten()]
+                            keypoints = ",".join(keypoints)
+                            f.write(action+","+keypoints+"\n")
 
                     cv2.destroyAllWindows()
         ret, frame = cap.read()

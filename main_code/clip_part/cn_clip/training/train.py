@@ -224,7 +224,7 @@ def train(model, data, epoch, optimizer, scaler, scheduler, args, global_trained
 
             # If (i + 1) % accum_freq is not zero, move on to the next batch.
             if ((i + 1) % args.accum_freq) > 0:
-                # FIXME this makes data time logging unreliable when accumulating
+                # FIXME this makes train_data time logging unreliable when accumulating
                 continue
 
             # Now, ready to take gradients for the last accum_freq batches.

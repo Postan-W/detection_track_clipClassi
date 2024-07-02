@@ -15,7 +15,7 @@ from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 import os
 os.environ["MODELSCOPE_CACHE"] = "./models/"
 class ClimbingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climb_yolov8l_80epoch_batch64_old_data_20240625.engine",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climb_20240701.engine",track_config="./track_config/botsort.yaml"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -25,8 +25,8 @@ class ClimbingDetection:
         #clip模型暂时成固定的
         self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
-        self.input_texts = ["有人在弯腰翻越障碍物", "有人翻越地铁闸机","有人双手支撑在物体上，身体悬在空中","有人攀爬地铁闸机","有人双手支撑在障碍物上攀爬","有人按在障碍物上跳跃","有人在地上蹲着","有人在楼梯上蹲着","有人在手扶电梯上蹲着","有人坐在地上","有人坐在楼梯上","有人坐在椅子上","有人坐在手扶电梯上","有人拿着衣服走过通道", "人的腿被障碍物完全挡住了","有人笔直地站着", "人笔直通过障碍物",
-                   "有人从障碍物旁边走过", "画面里没有人","人的手没有触碰障碍物"]
+        self.input_texts = ["有人在弯腰翻越障碍物","有人翻越地铁闸机","有人攀爬地铁闸机","有人双手支撑在障碍物上攀爬","有人按在障碍物上跳跃","有人在地上蹲着","有人在楼梯上蹲着","有人在手扶电梯上蹲着","有人坐在地上","有人坐在楼梯上","有人坐在椅子上","有人坐在手扶电梯上","有人拿着衣服走过通道", "人的腿被障碍物完全挡住了","有人笔直地站着", "人笔直通过障碍物",
+                   "有人从障碍物旁边走过", "画面里没有人","人的手没有触碰障碍物","有人从障碍物旁边经过"]
         self.target_texts = 6#目标text是前n=3个
         self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 
@@ -69,13 +69,12 @@ class ClimbingDetection:
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
-                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.35,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[1],conf=0.5,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
-                print(frame.boxes)
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
                 #     print(track_id,frame.boxes)
-                # frame.data = result.plot()
+                # frame.train_data = result.plot()
                 if not len(frame.boxes) == 0:
                     final_boxes = []
                     clip_input = []
@@ -125,8 +124,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "videos/fanyue/new_fanyue.avi"
-    output_path = "outputs/new_fanyue.mp4"
+    video_path = "../videos/output/fanyue_merged.mp4"
+    output_path = "outputs/fanyue_merged_output.mp4"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_reader.start()

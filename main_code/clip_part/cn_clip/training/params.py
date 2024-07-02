@@ -16,16 +16,16 @@ def get_default_params(model_name):
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--train-data",
+        "--train-train_data",
         type=str,
         required=True,
-        help="Path to the LMDB directory with training data split",
+        help="Path to the LMDB directory with training train_data split",
     )
     parser.add_argument(
-        "--val-data",
+        "--val-train_data",
         type=str,
         default=None,
-        help="Path to the LMDB directory with validation data split, default to None which disables validation",
+        help="Path to the LMDB directory with validation train_data split, default to None which disables validation",
     )
     parser.add_argument(
         "--num-workers", type=int, default=4, help="The number of workers for training dataloader."
@@ -115,7 +115,7 @@ def parse_args():
         help="If resumed from a checkpoint, whether to reset the optimizer states.",
     )
     parser.add_argument(
-        "--reset-data-offset",
+        "--reset-train_data-offset",
         action="store_true",
         default=False,
         help="If resumed from a checkpoint, whether to reset the dataset offset to the beginning.",

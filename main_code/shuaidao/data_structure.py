@@ -6,11 +6,11 @@ import numpy as np
 class Frame(BaseModel):
     """
     用来向队列中存图片帧信息
-    boxes, points, data, timestamp, url, 和 skip 是 Frame 类的属性。
+    boxes, points, train_data, timestamp, url, 和 skip 是 Frame 类的属性。
     boxes 和 points 是可选的，可以包含多个浮点数列表的列表。
     masks: model(image) 的结果
     areas: 经过置信度合类别判断后，的xyxyn坐标列表
-    data :是一个必须的属性，它是一个 NumPy 数组（np.ndarray）。（图片信息）
+    train_data :是一个必须的属性，它是一个 NumPy 数组（np.ndarray）。（图片信息）
     timestamp: 是帧的时间戳，是一个整数。
     url: 是帧对应的图像源的 URL，是一个字符串。
     skip: 是可选的布尔值，表示是否跳帧。

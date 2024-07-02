@@ -2,7 +2,7 @@
 '''
 This script serializes images and image-text pair annotations into LMDB files,
 which supports more convenient dataset loading and random access to samples during training 
-compared with TSV and Jsonl data files.
+compared with TSV and Jsonl train_data files.
 '''
 
 import argparse
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     specified_splits = list(set(args.splits.strip().split(",")))
     print("Dataset splits to be processed: {}".format(", ".join(specified_splits)))
 
-    # build LMDB data files
+    # build LMDB train_data files
     if args.lmdb_dir is None:
         args.lmdb_dir = os.path.join(args.data_dir, "lmdb")
     for split in specified_splits:

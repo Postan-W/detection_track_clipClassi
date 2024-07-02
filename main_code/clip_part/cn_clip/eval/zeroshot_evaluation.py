@@ -201,7 +201,7 @@ if __name__ == "__main__":
     if args.precision == "fp16":
         convert_weights(model)
 
-    # Get eval data.
+    # Get eval train_data.
     print("Preparing zeroshot dataset.")
     data = {}
     print(f"{model_info['image_resolution']}")

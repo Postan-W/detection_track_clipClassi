@@ -1,5 +1,5 @@
-d = {}
-a = ["a", "b", "c", "d"]
-for i in a:
-    d[i] = 0
-print(d)
+import numpy as np
+
+a = np.array([[1,2],[3,4],[5,6]])
+a = a.flatten()
+print(a,type(a))

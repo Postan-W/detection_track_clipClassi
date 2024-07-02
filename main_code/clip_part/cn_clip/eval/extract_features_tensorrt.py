@@ -26,13 +26,13 @@ def parse_args():
         help="Whether to extract text features."
     )
     parser.add_argument(
-        '--image-data', 
+        '--image-train_data',
         type=str, 
         default="../Multimodal_Retrieval/lmdb/test/imgs", 
         help="If --extract-image-feats is True, specify the path of the LMDB directory storing input image base64 strings."
     )
     parser.add_argument(
-        '--text-data', 
+        '--text-train_data',
         type=str, 
         default="../Multimodal_Retrieval/test_texts.jsonl", 
         help="If --extract-text-feats is True, specify the path of input text Jsonl file."
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         val = getattr(args, name)
         print(f"  {name}: {val}")
 
-    # Get data.
+    # Get train_data.
     if args.extract_image_feats:
         print("Preparing image inference dataset.")
         img_data = get_eval_img_dataset(args)
