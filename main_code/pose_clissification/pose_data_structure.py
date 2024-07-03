@@ -36,8 +36,8 @@ class Action(BaseModel):
     SQUAT: int = 3
     BEND: int = 4
     CLIMB: int = 5
-    STRADDLE: int = 6 #跨这个动作暂时不作为翻越的行为，以免人行走时跨步产生误报
+    # STRADDLE: int = 6 #跨这个动作暂时不作为翻越的行为，以免人行走时跨步产生误报
 
-action_list = ["stand","sit","fall","squat","bend","climb","straddle"]
+action_list = ["stand","sit","fall","squat","bend","climb"]
 
 

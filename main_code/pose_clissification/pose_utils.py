@@ -46,8 +46,8 @@ def keypoints_filter(keypoints:np.array=None)->bool:
             d[name] = xy_sum
 
     # 这里设定两个过滤规则，关于过滤规则还待探究
-    if zeros >= 7:
-        print("***遮挡过多***,无效数据")
+    if zeros >= 8:
+        print("***遮挡过多,无效数据***")
         return False
 
     #如果左膝右膝同时没检测到，或者左脚踝和右脚踝同时没检测到，则认为是无效数据，不能用来分类
