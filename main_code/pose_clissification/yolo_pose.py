@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 # Load a model
 model = YOLO("../weights/yolov8l-pose.engine")  #load an official model
-video_path = "../../videos/pose_videos/pingdishuai192.mp4"
+video_path = "../../videos/pose_videos/pj27.mp4"
 image_path = ""
 print(model.names)#人体姿势估计，检测的对象只有人
 # Predict with the model

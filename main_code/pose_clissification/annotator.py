@@ -8,7 +8,8 @@ from pose_data_structure import action_list
 import glob
 
 model = YOLO("../weights/yolov8l-pose.pt")
-videos = ""
+videos = glob.glob("../../videos/pose_videos/*")
+print(videos)
 output_path = "train_data/train.txt"
 
 def input_action():
@@ -44,7 +45,10 @@ def annotator(videos):
         with open(output_path, 'a') as f:
             while ret:
                 if count % 15 == 0:  # 跳帧标注
-                    result = model.track(frame, save=False, verbose=False, persist=True,tracker="../track_config/botsort.yaml")[0]
+                    try:
+                        result = model.track(frame, save=False, verbose=False, persist=True,tracker="../track_config/botsort.yaml")[0]
+                    except:
+                        print("********帧数据有问题，跳过********")
                     boxes = result.boxes.data.cpu().numpy()
                     xyn = result.keypoints.xyn.cpu().numpy()
                     if not len(boxes) == 0:
@@ -59,11 +63,11 @@ def annotator(videos):
                                 cv2.destroyAllWindows()
                                 continue
                             else:
-                                action_counter[action] += 1
-                                print(action_counter)
                                 keypoints = xyn[i]
                                 # 过滤
                                 if keypoints_filter(keypoints):
+                                    action_counter[action] += 1
+                                    print(action_counter)
                                     keypoints = [str(i) for i in keypoints[3:].flatten()]
                                     keypoints = ",".join(keypoints)
                                     f.write(action + "," + keypoints + "\n")
@@ -74,3 +78,5 @@ def annotator(videos):
             cap.release()
 
 
+
+annotator(videos=videos)

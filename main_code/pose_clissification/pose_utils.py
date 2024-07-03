@@ -17,7 +17,7 @@ def name2index(data_path,output_path,action=Action().dict()):
                 t[0] = label
                 f_out.write(",".join(map(str,t)) + "\n")
 
-name2index("./train_data/train.txt","./train_data/train_indexed.txt")
+# name2index("./train_data/train.txt","./train_data/train_indexed.txt")
 
 def plot_boxes_with_text_single_box(box, img, color=[0,0,255], text_info="None",velocity=None, thickness=1, fontsize=0.5, fontthickness=1):
     # Plots bounding boxes on image img
@@ -50,9 +50,9 @@ def keypoints_filter(keypoints:np.array=None)->bool:
         print("***遮挡过多,无效数据***")
         return False
 
-    #如果左膝右膝同时没检测到，或者左脚踝和右脚踝同时没检测到，则认为是无效数据，不能用来分类
-    if sum([d["LEFT_KNEE"],d["RIGHT_KNEE"]]) == 0 or sum([d["LEFT_ANKLE"],d["RIGHT_ANKLE"]]) == 0:
-        print("***双膝或双踝被遮挡，无效数据***")
+    #如果左膝右膝同时没检测到，以及左脚踝和右脚踝同时没检测到，则认为是无效数据，不能用来分类
+    if sum([d["LEFT_KNEE"],d["RIGHT_KNEE"]]) == 0 and sum([d["LEFT_ANKLE"],d["RIGHT_ANKLE"]]) == 0:
+        print("***双膝以及双踝被遮挡，无效数据***")
         return False
 
     return True
