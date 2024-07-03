@@ -1,6 +1,5 @@
 #Author wmingzhu
 #Date 20240701
-
 from ultralytics import YOLO
 import cv2
 from pose_utils import plot_boxes_with_text_single_box,keypoints_filter
