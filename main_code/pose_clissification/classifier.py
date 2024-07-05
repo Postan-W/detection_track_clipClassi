@@ -32,7 +32,8 @@ class PoseClassifier(torch.nn.Module):
         self.linear1 = torch.nn.Linear(input_dim,256)
         self.activation = torch.nn.LeakyReLU(0.01)
         # self.drop = torch.nn.Dropout(0.25)#模型比较简单，暂时不用
-        self.linear2 = torch.nn.Linear(256,128)
+        self.linear2 = torch.nn.Linear(256,512)
+        self.linear3 = torch.nn.Linear(512,128)
         self.output = torch.nn.Linear(128,num_classes)
 
     def forward(self, x):
@@ -40,6 +41,8 @@ class PoseClassifier(torch.nn.Module):
         out = self.linear1(x)
         out = self.activation(out)
         out = self.linear2(out)
+        out = self.activation(out)
+        out = self.linear3(out)
         out = self.activation(out)
         out = self.output(out)
         return out

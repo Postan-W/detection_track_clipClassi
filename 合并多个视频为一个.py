@@ -1,10 +1,10 @@
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 import glob
 
-video_dir = "./videos/fanyue/"
+video_dir = "C:/Users/wmingdru/Desktop/workspace/data/fanyue/fanyue_suzhou/"
 output_path = "./videos/output/fanyue_merged.mp4"
 
-videos = glob.glob(video_dir+"*.mp4")
+videos = glob.glob(video_dir+"*")
 
 
 # 创建视频剪辑列表

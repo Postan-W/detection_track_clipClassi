@@ -7,7 +7,7 @@ import os
 from pose_data_structure import action_list
 import glob
 
-model = YOLO("../weights/yolov8l-pose.pt")
+model = YOLO("../weights/yolov8l-pose.engine")
 videos = glob.glob("../../videos/pose_videos/*")
 print(videos)
 output_path = "train_data/train.txt"
@@ -53,11 +53,13 @@ def annotator(videos):
                     xyn = result.keypoints.xyn.cpu().numpy()
                     if not len(boxes) == 0:
                         for i, box in enumerate(boxes):
-                            text_info = "index:" + str(i)  # index最大的那个就是当前要标注的那个box(cv2.imshow的标题也会提示当前是哪个box)
+                            text_info = "box:" + str(i)  # index最大的那个就是当前要标注的那个box(cv2.imshow的标题也会提示当前是哪个box)
                             plot_boxes_with_text_single_box(box, frame, text_info=text_info)
                             cv2.imshow("current box:{}".format(i), frame)
-                            cv2.waitKey(0)
-                            action = input_action()  # 手动输入的标签
+                            key = cv2.waitKey(0)
+                            if key == ord('q'):
+                                cv2.destroyAllWindows()
+                            action = input_action()  #手动输入的标签
                             if action == "p":
                                 print("不为当前box标注")
                                 cv2.destroyAllWindows()
@@ -72,11 +74,8 @@ def annotator(videos):
                                     keypoints = ",".join(keypoints)
                                     f.write(action + "," + keypoints + "\n")
 
-                            cv2.destroyAllWindows()
                 ret, frame = cap.read()
                 count += 1
-            cap.release()
-
-
+        cap.release()
 
 annotator(videos=videos)

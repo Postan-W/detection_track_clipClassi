@@ -20,3 +20,9 @@ print(disk_usage)
 # 获取网络信息
 net_io = psutil.net_io_counters()
 print(net_io)
+class DeviceInfo:
+    @classmethod
+    def get_cpu_info(cls):
+        return psutil.cpu_percent()
+
+print(DeviceInfo.get_cpu_info())

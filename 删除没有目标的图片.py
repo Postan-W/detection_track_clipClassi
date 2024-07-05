@@ -4,8 +4,8 @@
 """
 import os
 import glob
-images_dir = "C:/Users/wmingdru/Desktop/workspace/data/fanyue/20240701/subway_images/train/images/"
-labels_dir = "C:/Users/wmingdru/Desktop/workspace/data/fanyue/20240701/subway_images/train/labels/"
+images_dir = "C:/Users/wmingdru/Desktop/workspace/data/fanyue/20240704/train/images/"
+labels_dir = "C:/Users/wmingdru/Desktop/workspace/data/fanyue/20240704/train/labels/"
 
 def delete_images(images_dir,labels_dir):
     images = glob.glob(os.path.join(images_dir, "*.jpg"))
