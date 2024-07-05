@@ -29,6 +29,7 @@ def plot_boxes_with_text_single_box(box, img, color=[0,0,255], text_info="None",
    return img
 
 #一些关键点被遮挡的数据影响模型训练和推理效果。在标注数据写入文件之前以及姿势估计的关键点数据被送入到分类器之前做过滤
+#这个过滤函数的过滤规则影响到标注数据的质量和模型推理时的准确度，所以规则方面还有待进一步的探究
 def keypoints_filter(keypoints:np.array=None)->bool:
     """
     :param keypoints: [[x1,y1],[x2,y2],...[x17,y17]]

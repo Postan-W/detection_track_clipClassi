@@ -11,13 +11,13 @@ class PoseDataset(Dataset):
             total = len(lines)
             random.shuffle(lines)#当然，这样有一定概率验证集包含在训练集内
             if mode == "train":
-                lines = lines[:int(0.6*len(lines))]
+                lines = lines[:int(0.8*len(lines))]
             elif mode == "val":
-                lines = lines[int(0.6 * len(lines)):]
+                lines = lines[int(0.8 * len(lines)):]
 
         self.data_source = lines
 
-    def __getitem__(self, item):
+    def __getitem__(self,item):
         line = self.data_source[item].split(",")
         label = torch.tensor(int(line[0]))#默认是torch.int64。范围是0到number_classes-1
         data = torch.tensor([float(i) for i in line[1:]])#默认是torch.float32

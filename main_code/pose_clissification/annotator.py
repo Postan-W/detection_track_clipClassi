@@ -49,6 +49,7 @@ def annotator(videos):
                         result = model.track(frame, save=False, verbose=False, persist=True,tracker="../track_config/botsort.yaml")[0]
                     except:
                         print("********帧数据有问题，跳过********")
+                        continue
                     boxes = result.boxes.data.cpu().numpy()
                     xyn = result.keypoints.xyn.cpu().numpy()
                     if not len(boxes) == 0:
