@@ -31,7 +31,7 @@ class PoseClassifier(torch.nn.Module):
         super(PoseClassifier, self).__init__()
         self.linear1 = torch.nn.Linear(input_dim,256)
         self.activation = torch.nn.LeakyReLU(0.01)
-        # self.drop = torch.nn.Dropout(0.25)#模型比较简单，暂时不用
+        #self.drop = torch.nn.Dropout(0.25)#模型比较简单，暂时不用
         self.linear2 = torch.nn.Linear(256,512)
         self.linear3 = torch.nn.Linear(512,128)
         self.output = torch.nn.Linear(128,num_classes)

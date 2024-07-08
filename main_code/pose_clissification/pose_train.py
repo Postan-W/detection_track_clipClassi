@@ -32,7 +32,7 @@ def evaluate(model,data):
     return correct/total
 
 if __name__ == "__main__":
-    envname = "20240703"
+    envname = "20240708"
     vis = visdom.Visdom(env=envname)
     model = PoseClassifier(input_dim=28,num_classes=6).to(device)
     # print(model)

@@ -55,7 +55,6 @@ def keypoints_filter(keypoints:np.array=None)->bool:
     if sum([d["LEFT_KNEE"],d["RIGHT_KNEE"]]) == 0 and sum([d["LEFT_ANKLE"],d["RIGHT_ANKLE"]]) == 0:
         print("***双膝以及双踝被遮挡，无效数据***")
         return False
-
     return True
 
 
