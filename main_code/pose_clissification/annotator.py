@@ -55,12 +55,19 @@ def annotator(videos):
                     if not len(boxes) == 0:
                         for i, box in enumerate(boxes):
                             text_info = "box:" + str(i)  # index最大的那个就是当前要标注的那个box(cv2.imshow的标题也会提示当前是哪个box)
-                            plot_boxes_with_text_single_box(box, frame, text_info=text_info)
+                            plot_boxes_with_text_single_box(box, frame, text_info=text_info)#当前框是红的
+                            if i > 0:#前一个框画成蓝色
+                                plot_boxes_with_text_single_box(boxes[i - 1],frame,color=[255,0,0],text_info="box:" + str(i - 1))
                             cv2.imshow("current box:{}".format(i), frame)
-                            key = cv2.waitKey(0)
-                            if key == ord('q'):
-                                cv2.destroyAllWindows()
-                            action = input_action()  #手动输入的标签
+                            # key = cv2.waitKey(0)
+                            # if key == ord('q'):
+                            #     cv2.destroyAllWindows()
+                            while True:
+                                key = cv2.waitKey(0) #无限等待按键
+                                if key == ord('q'):
+                                    cv2.destroyAllWindows()
+                                    break
+                            action = input_action() #手动输入的标签
                             if action == "p":
                                 print("不为当前box标注")
                                 cv2.destroyAllWindows()
