@@ -3,10 +3,10 @@
 
 import torch
 from torch.utils.data import Dataset,DataLoader
-from pose_data_structure import Action,KeyPoints
+from pose_data_structure import Action,KeyPoints,action_list
 import cv2
 import numpy as np
-
+from typing import List
 #在构建数据的时候标签使用的是名称，这样比索引更直观，而且避免出错,这里在训练前把名称转为index
 def name2index(data_path,output_path,action=Action().dict()):
     with open(data_path,"r") as f_in:
@@ -18,6 +18,14 @@ def name2index(data_path,output_path,action=Action().dict()):
                 f_out.write(",".join(map(str,t)) + "\n")
 
 # name2index("./train_data/train.txt","./train_data/train_indexed.txt")
+
+#统计每个类别的样本个数
+def count_samples(lines:List[str]):
+    action_counter = {i: 0 for i in action_list}
+    for line in lines:
+        action = line.strip().split(",")[0]
+        action_counter[action_list[int(action)]] += 1
+    return action_counter
 
 def plot_boxes_with_text_single_box(box, img, color=[0,0,255], text_info="None",velocity=None, thickness=1, fontsize=0.5, fontthickness=1):
     # Plots bounding boxes on image img

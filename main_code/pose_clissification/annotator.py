@@ -14,7 +14,7 @@ output_path = "train_data/train.txt"
 
 def input_action():
     action = ""
-    while not action in (action_list + ["p"]):#p代表不为当前box标注
+    while not action in (action_list + ["p"] + ["exit"]):#p代表不为当前box标注
         action = input("输入动作名称:")
     print("标签是:{}".format(action))
     return action
@@ -59,9 +59,6 @@ def annotator(videos):
                             if i > 0:#前一个框画成蓝色
                                 plot_boxes_with_text_single_box(boxes[i - 1],frame,color=[255,0,0],text_info="box:" + str(i - 1))
                             cv2.imshow("current box:{}".format(i), frame)
-                            # key = cv2.waitKey(0)
-                            # if key == ord('q'):
-                            #     cv2.destroyAllWindows()
                             while True:
                                 key = cv2.waitKey(0) #无限等待按键
                                 if key == ord('q'):
@@ -85,5 +82,7 @@ def annotator(videos):
                 ret, frame = cap.read()
                 count += 1
         cap.release()
+        os.remove(video_path)
+        print("=====视频:{}标注完成，已删除=====".format(video_path))
 
 annotator(videos=videos)

@@ -9,7 +9,7 @@ device = torch.device("cuda")
 batch_size = 32
 lr = 0.01
 epochs = 120
-workers = 4
+workers = 0
 torch.manual_seed(1234)#随机种子一定时，每次运行程序随机生成的数值都是一样的，包括初始化权重
 
 train_dataset = PoseDataset("./train_data/train_indexed.txt",mode="train")

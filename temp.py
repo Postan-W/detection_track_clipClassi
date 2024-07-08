@@ -1,9 +1,7 @@
-import torch
+import os
+import glob
 
-t = torch.Tensor([[1,2,3,4,5],[6,77,8,9,10]])
-probs = torch.nn.functional.softmax(t, dim=1)
-print(probs)
-
-a = [[[1,2],[3,4],[1,2],[3,4],[1,2],[3,4]],[[1,2],[3,4],[1,2],[3,4],[1,2],[3,4]],[[1,2],[3,4],[1,2],[3,4],[1,2],[3,4]],[[1,2],[3,4],[1,2],[3,4],[1,2],[3,4]]]
-print(a[2,3:].flatten())
-print(a[2][3:].flatten())
+d = glob.glob("./videos/output/*")
+for i in d:
+    t = os.path.splitext(os.path.split(i)[1])
+    print(t[0]+"_infered"+t[1])

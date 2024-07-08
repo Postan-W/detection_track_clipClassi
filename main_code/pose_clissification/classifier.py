@@ -3,18 +3,20 @@
 import torch
 from torch.utils.data import Dataset,DataLoader
 import random
-
+from pose_utils import count_samples
 class PoseDataset(Dataset):
     def __init__(self,data_path=None,mode="train"):
         with open(data_path,"r") as f:
             lines = [line.strip() for line in f.readlines() if line.strip()]
+            # print("各类别总样本个数:{}".format(count_samples(lines)))
             total = len(lines)
-            random.shuffle(lines)#当然，这样有一定概率验证集包含在训练集内
+            random.shuffle(lines)
             if mode == "train":
                 lines = lines[:int(0.8*len(lines))]
             elif mode == "val":
                 lines = lines[int(0.8 * len(lines)):]
 
+        # print("各类别{}样本个数:{}".format(mode,count_samples(lines)))
         self.data_source = lines
 
     def __getitem__(self,item):
