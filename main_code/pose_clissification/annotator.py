@@ -7,8 +7,8 @@ import os
 from pose_data_structure import action_list
 import glob
 
-model = YOLO("../weights/yolov8l-pose.engine")
-videos = glob.glob("../../videos/pose_videos/*")
+model = YOLO("../weights/yolov8x-pose.engine")
+videos = glob.glob("../../videos/fanyue_train/*")
 print(videos)
 output_path = "train_data/train.txt"
 
@@ -42,14 +42,17 @@ def annotator(videos):
         cap = cv2.VideoCapture(video_path)
         ret, frame = cap.read()
         count = 1
+        exit_signal = False
         with open(output_path, 'a') as f:
             while ret:
+                if exit_signal:
+                    break
                 if count % 15 == 0:  # 跳帧标注
                     try:
                         result = model.track(frame, save=False, verbose=False, persist=True,tracker="../track_config/botsort.yaml")[0]
-                    except:
-                        print("********帧数据有问题，跳过********")
-                        continue
+                    except Exception as e:
+                        print(e)
+                        break
                     boxes = result.boxes.data.cpu().numpy()
                     xyn = result.keypoints.xyn.cpu().numpy()
                     if not len(boxes) == 0:
@@ -69,6 +72,9 @@ def annotator(videos):
                                 print("不为当前box标注")
                                 cv2.destroyAllWindows()
                                 continue
+                            elif action == "exit":
+                                exit_signal = True
+                                break
                             else:
                                 keypoints = xyn[i]
                                 # 过滤

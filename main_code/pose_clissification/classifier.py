@@ -10,11 +10,11 @@ class PoseDataset(Dataset):
             lines = [line.strip() for line in f.readlines() if line.strip()]
             # print("各类别总样本个数:{}".format(count_samples(lines)))
             total = len(lines)
-            random.shuffle(lines)
+            random.shuffle(lines)#实际上既然是shuffle的，下面的按照前后百分比取意义不大
             if mode == "train":
-                lines = lines[:int(0.8*len(lines))]
+                lines = lines[:int(0.95*len(lines))]
             elif mode == "val":
-                lines = lines[int(0.8 * len(lines)):]
+                lines = lines[int(0.7 * len(lines)):]
 
         # print("各类别{}样本个数:{}".format(mode,count_samples(lines)))
         self.data_source = lines
@@ -33,17 +33,19 @@ class PoseClassifier(torch.nn.Module):
         super(PoseClassifier, self).__init__()
         self.linear1 = torch.nn.Linear(input_dim,256)
         self.activation = torch.nn.LeakyReLU(0.01)
-        #self.drop = torch.nn.Dropout(0.25)#模型比较简单，暂时不用
-        self.linear2 = torch.nn.Linear(256,512)
-        self.linear3 = torch.nn.Linear(512,128)
+        self.drop = torch.nn.Dropout(0.2)
+        self.linear2 = torch.nn.Linear(256,1024)
+        self.linear3 = torch.nn.Linear(1024,128)
         self.output = torch.nn.Linear(128,num_classes)
 
     def forward(self, x):
         #多分类损失函数nn.CrossEntropyLoss()内部做了softmax和标签的one-hot，所以不用我们显式做这两个东西
         out = self.linear1(x)
         out = self.activation(out)
+        # out = self.drop(out)
         out = self.linear2(out)
         out = self.activation(out)
+        # out = self.drop(out)
         out = self.linear3(out)
         out = self.activation(out)
         out = self.output(out)
@@ -51,8 +53,8 @@ class PoseClassifier(torch.nn.Module):
 
 
 if __name__ == "__main__":
-    train_dataset = PoseDataset("./train_data/train_indexed.txt",mode="train")
-    val_dataset = PoseDataset("./train_data/train_indexed.txt",mode="val")
+    train_dataset = PoseDataset("train_data/train_indexed.txt", mode="train")
+    val_dataset = PoseDataset("train_data/train_indexed.txt", mode="val")
 
     print(len(train_dataset),len(val_dataset))
     dataloader = DataLoader(dataset=train_dataset, batch_size=2, shuffle=True, num_workers=4,drop_last=True)

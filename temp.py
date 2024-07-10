@@ -1,7 +1,9 @@
-import os
-import glob
+import cv2
+import time
 
-d = glob.glob("./videos/output/*")
-for i in d:
-    t = os.path.splitext(os.path.split(i)[1])
-    print(t[0]+"_infered"+t[1])
+cap = cv2.VideoCapture("./new_fanyue.avi")
+ret, frame = cap.read()
+while ret:
+    print("正在读取视频帧")
+    time.sleep(0.5)
+    ret, frame = cap.read()
