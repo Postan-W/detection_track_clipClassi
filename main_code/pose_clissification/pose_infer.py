@@ -36,6 +36,8 @@ def infer_on_video(test_video,output_path):
                         action_name = action_list[action_index]
                         text_info = action_name + " p:{}".format(action_probability) + " conf:" + (str(round(box[4],2)) if len(box) == 6 else str(round(box[5],2)))
                         box_conf = round(box[4],2) if len(box) == 6 else round(box[5],2)#被遮挡的人体部位的关键点总是被误检，但conf应该是低的，所以用conf过滤到这种情况
+
+                        #需要再加几何上的过滤规则，比如俯视的时候头在最上面?可以从这个入手？
                         if action_name in ["climb"]:
                             if action_probability > 0.92 and box_conf > 0.82:
                                 plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0],text_info=text_info)
