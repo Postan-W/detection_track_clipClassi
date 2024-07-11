@@ -32,11 +32,11 @@ class PoseDataset(Dataset):
 class PoseClassifier(torch.nn.Module):
     def __init__(self, input_dim,num_classes):
         super(PoseClassifier, self).__init__()
-        self.linear1 = torch.nn.Linear(input_dim,256)
+        self.linear1 = torch.nn.Linear(input_dim,128)
         self.activation = torch.nn.LeakyReLU(0.01)
         self.drop = torch.nn.Dropout(0.2)
-        self.linear2 = torch.nn.Linear(256,1024)
-        self.linear3 = torch.nn.Linear(1024,128)
+        self.linear2 = torch.nn.Linear(128,256)
+        self.linear3 = torch.nn.Linear(256,128)
         self.output = torch.nn.Linear(128,num_classes)
 
     def forward(self, x):
@@ -54,8 +54,8 @@ class PoseClassifier(torch.nn.Module):
 
 
 if __name__ == "__main__":
-    train_dataset = PoseDataset("train_data/train_indexed.txt", mode="train")
-    val_dataset = PoseDataset("train_data/train_indexed.txt", mode="val")
+    train_dataset = PoseDataset("train_data/suzhou_train_indexed.txt", mode="train")
+    val_dataset = PoseDataset("train_data/suzhou_train_indexed.txt", mode="val")
 
     print(len(train_dataset),len(val_dataset))
     dataloader = DataLoader(dataset=train_dataset, batch_size=2, shuffle=True, num_workers=4,drop_last=True)

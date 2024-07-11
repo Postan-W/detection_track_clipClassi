@@ -10,7 +10,7 @@ import glob
 model = YOLO("../weights/yolov8x-pose.engine")
 videos = glob.glob("../../videos/suzhou_train/*")
 print(videos)
-output_path = "train_data/suzhou_train.txt"
+output_path = "train_data/suzhou_camera1.txt"
 
 def input_action():
     action = ""
@@ -41,6 +41,8 @@ def annotator(videos):
     for video_path in videos:
         cap = cv2.VideoCapture(video_path)
         ret, frame = cap.read()
+        height, width, _ = frame.shape
+        scale_rate = 0.8
         count = 1
         exit_signal = False
         with open(output_path, 'a') as f:
@@ -61,6 +63,9 @@ def annotator(videos):
                             plot_boxes_with_text_single_box(box, frame, text_info=text_info)#当前框是红的
                             if i > 0:#前一个框画成蓝色
                                 plot_boxes_with_text_single_box(boxes[i - 1],frame,color=[255,0,0],text_info="box:" + str(i - 1))
+
+                            cv2.namedWindow("current box:{}".format(i), cv2.WINDOW_NORMAL)
+                            cv2.resizeWindow("current box:{}".format(i),(int(width*scale_rate),int(height*scale_rate)))
                             cv2.imshow("current box:{}".format(i), frame)
                             while True:
                                 key = cv2.waitKey(0) #无限等待按键

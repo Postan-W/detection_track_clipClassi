@@ -7,7 +7,7 @@ import glob,os
 
 device = torch.device("cuda")
 pose_model = YOLO("../weights/yolov8x-pose.engine")
-classi_model = torch.load("./models/best_epoch_in_val.pt").to(device)
+classi_model = torch.load("models/suzhou_val.pt").to(device)
 classi_model.eval()#在评估模式下，所有特定于训练的层(dropout和batchnorm等)将被设置为不活动
 
 def infer_on_video(test_video,output_path):
@@ -53,7 +53,7 @@ def infer_on_video(test_video,output_path):
 
 fanyue_total = "C:/Users/wmingdru/Desktop/workspace/data/fanyue_shuaidao/videos/*"
 shuaidao_taotal = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/videos_test/*"
-videos_dir = glob.glob("../../videos/fanyue_shuaidao/*")
+videos_dir = glob.glob("../../videos/suzhou_test/*")
 output_dir = "./output/"
 
 for video in videos_dir:
