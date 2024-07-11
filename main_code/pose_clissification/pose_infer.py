@@ -7,7 +7,7 @@ import glob,os
 
 device = torch.device("cuda")
 pose_model = YOLO("../weights/yolov8x-pose.engine")
-classi_model = torch.load("./models/best_epoch_in_train.pt").to(device)
+classi_model = torch.load("./models/best_epoch_in_val.pt").to(device)
 classi_model.eval()#在评估模式下，所有特定于训练的层(dropout和batchnorm等)将被设置为不活动
 
 def infer_on_video(test_video,output_path):
@@ -16,7 +16,7 @@ def infer_on_video(test_video,output_path):
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         ret, frame = cap.read()
         height, width, _ = frame.shape
-        video = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'XVID'), 30,(width, height))
+        video = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'X264'), 30,(width, height))
         processed_count = 0
         while ret:
             try:
@@ -36,12 +36,12 @@ def infer_on_video(test_video,output_path):
                         action_name = action_list[action_index]
                         text_info = action_name + " p:{}".format(action_probability) + " conf:" + (str(round(box[4],2)) if len(box) == 6 else str(round(box[5],2)))
                         box_conf = round(box[4],2) if len(box) == 6 else round(box[5],2)#被遮挡的人体部位的关键点总是被误检，但conf应该是低的，所以用conf过滤到这种情况
-                        if action_probability > 0.97 and box_conf > 0.82:
-                            if action_name in ["climb"]:
-                                plot_boxes_with_text_single_box(box, frame,color=[255,0,0], text_info=text_info)
-                            elif action_name in ["fall"]:
+                        if action_name in ["climb"]:
+                            if action_probability > 0.92 and box_conf > 0.82:
+                                plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0],text_info=text_info)
+                        elif action_name in ["fall"]:
+                            if action_probability > 0.92 and box_conf > 0.82:
                                 plot_boxes_with_text_single_box(box, frame, text_info=text_info)
-
 
             video.write(frame)
             processed_count += 1
@@ -51,11 +51,11 @@ def infer_on_video(test_video,output_path):
         cap.release()
         video.release()
 
-fanyue_total = "C:/Users/wmingdru/Desktop/workspace/data/fanyue/videos/*"
+fanyue_total = "C:/Users/wmingdru/Desktop/workspace/data/fanyue_shuaidao/videos/*"
 shuaidao_taotal = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/videos_test/*"
-videos_dir = glob.glob("../../videos/fanyue/*")
+videos_dir = glob.glob("../../videos/fanyue_shuaidao/*")
 output_dir = "./output/"
 
 for video in videos_dir:
     temp = os.path.splitext(os.path.split(video)[1])
-    infer_on_video(test_video=video, output_path=os.path.join(output_dir,temp[0]+"_infered"+".avi"))
+    infer_on_video(test_video=video, output_path=os.path.join(output_dir,temp[0]+"_infered"+".mp4"))

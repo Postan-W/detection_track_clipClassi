@@ -7,7 +7,7 @@ from classifier import PoseClassifier,PoseDataset
 device = torch.device("cuda")
 
 batch_size = 32
-lr = 0.0001
+lr = 0.0002
 epochs = 200
 workers = 0
 torch.manual_seed(1234)#随机种子一定时，每次运行程序随机生成的数值都是一样的，包括初始化权重
@@ -67,8 +67,8 @@ if __name__ == "__main__":
             print("当前epoch:{}的loss最小，值为:{}".format(epoch,best_epoch_loss))
             torch.save(model, "./models/best_epoch_in_train.pt")  # 验证集上得到的best模型未必就是最好的，这里保存训练集上loss最小的模型
 
-        if epoch % 2 == 0:
-            accuracy = evaluate(model, val_dataloader)
+        if epoch % 1 == 0:
+            accuracy = evaluate(model,val_dataloader)
             if accuracy > best_accuracy:
                 best_epoch = epoch
                 best_accuracy = accuracy

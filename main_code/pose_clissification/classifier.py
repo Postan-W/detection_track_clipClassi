@@ -12,9 +12,10 @@ class PoseDataset(Dataset):
             total = len(lines)
             random.shuffle(lines)#实际上既然是shuffle的，下面的按照前后百分比取意义不大
             if mode == "train":
-                lines = lines[:int(0.95*len(lines))]
+                # lines = lines[:int(0.8*len(lines))]
+                lines = lines #数据少，暂时拿全部数据训练
             elif mode == "val":
-                lines = lines[int(0.7 * len(lines)):]
+                lines = lines[int(0.6 * len(lines)):]
 
         # print("各类别{}样本个数:{}".format(mode,count_samples(lines)))
         self.data_source = lines

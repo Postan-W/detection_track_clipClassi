@@ -26,8 +26,8 @@ def get_images(videopath,destination,step = 5,current_video_index=0,total_video_
     cv2.destroyAllWindows()
 
 
-destination = "C:/Users/wmingdru/Desktop/workspace/data/fanyue/fanyue_suzhou_images/"
-videos = get_source("C:/Users/wmingdru/Desktop/workspace/data/fanyue/fanyue_suzhou/")
+destination = "C:/Users/wmingdru/Desktop/workspace/data/fanyue_shuaidao/fanyue_suzhou_images/"
+videos = get_source("C:/Users/wmingdru/Desktop/workspace/data/fanyue_shuaidao/fanyue_suzhou/")
 
 total_video_num = len(videos)
 for i,videopath in enumerate(videos):

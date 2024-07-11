@@ -2,7 +2,7 @@ import subprocess
 import os
 
 
-input_video = "./videos/fanyue/real_negative111.mp4"
+input_video = "./videos/fanyue_shuaidao/real_negative111.mp4"
 output_video = "./videos/fanyue_negative_trimmed.mp4"
 
 
