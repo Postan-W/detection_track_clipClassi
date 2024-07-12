@@ -15,7 +15,7 @@ import os
 os.environ["MODELSCOPE_CACHE"] = "../models/"
 
 class FallDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="../weights/fall_yolov8l_20240626.engine",track_config="../track_config/botsort.yaml",crop=False,person_model="../weights/yolov8l.pt"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="../weights/fall_2024712_best.engine",track_config="../track_config/botsort.yaml",crop=False,person_model="../weights/yolov8l.pt"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -29,7 +29,7 @@ class FallDetection:
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
         self.input_texts = ["有人躺在地上", "有人摔倒在地上","有人躺在地上睡觉","有人在楼梯上摔倒了","有人在手扶电梯上摔倒了","有人在上楼梯","有人在下楼梯","有人站在手扶电梯上","有人站在楼梯上","有人蹲在手扶电梯上","有人蹲在楼梯上","有人坐在手扶电梯上","有人坐在楼梯上","有人坐在地上","有人坐在椅子上","画面里没有人", "鞋子在地上",
                    "箱子在地上", "毯子在地上","一块布在地上","画面里有个物体不是人","有人在行走","有人在站着","有人在蹲着","有人在蹲着玩手机","有人在修理东西"]
-        self.target_texts = 5#目标text是前n=3个
+        self.target_texts = 5#目标text是前n=5个
         self.text_embedding = self.clip_model.forward({'text': self.input_texts})['text_embedding']
 
     def id_update(self,frame,threshhold:int=5):
@@ -72,7 +72,7 @@ class FallDetection:
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
-                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[3],conf=0.6,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[3],conf=0.8,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
@@ -93,7 +93,15 @@ class FallDetection:
                         x2 = x2 + padding_x if (x2 + padding_x) < frame_width else frame_width
                         y2 = y2 + padding_y if (y2 + padding_y) < frame_height else frame_height
                         croped = frame.data[y1:y2, x1:x2, :]
-                        croped_boxes.append(croped)#当然，这里用更小的crop用作检测person更合适，待做
+                        padding_y = int(frame_height / 20)  # box高度增加1/10
+                        padding_x = int(frame_width / 20)  # box宽度增加1/10
+                        x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
+                        x1 = x1 - padding_x if (x1 - padding_x) > 0 else 0
+                        y1 = y1 - padding_y if (y1 - padding_y) > 0 else 0
+                        x2 = x2 + padding_x if (x2 + padding_x) < frame_width else frame_width
+                        y2 = y2 + padding_y if (y2 + padding_y) < frame_height else frame_height
+                        person_detection_croped = frame.data[y1:y2, x1:x2, :]
+                        croped_boxes.append(person_detection_croped)
                         rgb_image = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
                         pil_image = Image.fromarray(rgb_image)
 
@@ -139,8 +147,8 @@ class FallDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "./videos/suzhoucamera1_2.avi"
-    output_path = "outputs/suzhoucamera1_2.avi"
+    video_path = "./videos/suzhoucamera1_7.avi"
+    output_path = "outputs/suzhoucamera1_7.avi"
     if os.path.exists(output_path):
         print("文件已存在，先删除")
         os.remove(output_path)

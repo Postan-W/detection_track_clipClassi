@@ -124,8 +124,8 @@ class ClimbingDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../videos/suzhou_train/climb06.avi"
-    output_path = "outputs/climb06_output.mp4"
+    video_path = "../videos/suzhou_train/suzhoucamera1_10.avi"
+    output_path = "outputs/suzhoucamera1_10.avi"
     video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
     total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
     video_reader.start()
