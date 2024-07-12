@@ -7,7 +7,7 @@ import glob,os
 
 device = torch.device("cuda")
 pose_model = YOLO("../weights/yolov8x-pose.engine")
-classi_model = torch.load("models/suzhou_val.pt").to(device)
+classi_model = torch.load("models/best_epoch_in_val.pt").to(device)
 classi_model.eval()#在评估模式下，所有特定于训练的层(dropout和batchnorm等)将被设置为不活动
 
 def infer_on_video(test_video,output_path):
@@ -30,6 +30,7 @@ def infer_on_video(test_video,output_path):
                     keypoints = xyn[i]
                     if keypoints_filter(keypoints):
                         action_result = classi_model(torch.tensor(keypoints[3:].flatten(),dtype=torch.float32).unsqueeze(0).to(device))
+                        action_result = action_result / 2 #目的是减弱softmax的缩放能力
                         probabilities = torch.nn.functional.softmax(action_result,dim=1)
                         action_index = probabilities.argmax(dim=1).item()
                         action_probability = round(probabilities[0][action_index].item(),2)
@@ -39,10 +40,10 @@ def infer_on_video(test_video,output_path):
 
                         #需要再加几何上的过滤规则，比如俯视的时候头在最上面?可以从这个入手？
                         if action_name in ["climb"]:
-                            if action_probability > 0.92 and box_conf > 0.82:
+                            if action_probability > 0.7 and box_conf > 0.82:
                                 plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0],text_info=text_info)
                         elif action_name in ["fall"]:
-                            if action_probability > 0.92 and box_conf > 0.82:
+                            if action_probability > 0.7 and box_conf > 0.82:
                                 plot_boxes_with_text_single_box(box, frame, text_info=text_info)
 
             video.write(frame)
@@ -55,7 +56,7 @@ def infer_on_video(test_video,output_path):
 
 fanyue_total = "C:/Users/wmingdru/Desktop/workspace/data/fanyue_shuaidao/videos/*"
 shuaidao_taotal = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/videos_test/*"
-videos_dir = glob.glob("../../videos/suzhou_test/*")
+videos_dir = glob.glob("../../videos/pose_infer/*")
 output_dir = "./output/"
 
 for video in videos_dir:

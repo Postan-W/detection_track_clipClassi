@@ -15,7 +15,7 @@ import os
 os.environ["MODELSCOPE_CACHE"] = "../models/"
 
 class FallDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="../weights/fall_yolov8l_20240626.engine",track_config="../track_config/botsort.yaml",crop=False):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="../weights/fall_yolov8l_20240626.engine",track_config="../track_config/botsort.yaml",crop=False,person_model="../weights/yolov8l.pt"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -23,6 +23,7 @@ class FallDetection:
         self.id_record = {}#key:id;value:time.time()
         self.track_config = track_config
         self.crop = crop#是否要保存截图
+        self.person_model = YOLO(person_model)#加载一个目标检测或者姿势估计模型，用来确认目标是人
         #clip模型暂时成固定的
         self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
@@ -71,7 +72,7 @@ class FallDetection:
                 #注2：Tracking configuration shares properties with Predict mode, such as conf, iou, and show. For further configurations, refer to the Predict model page.
                 #注3：Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, custom_tracker.yaml) from ultralytics/cfg/trackers and modify any configurations (except the tracker_type) as per your needs.
                 #注4:追踪的结果是ReID的,需要persist=True
-                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[3],conf=0.85,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[3],conf=0.6,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 # track_id = [int(i) for i in result.boxes.id.tolist()] if result.boxes.id != None else None
                 # if track_id != None:
@@ -80,6 +81,7 @@ class FallDetection:
                 if not len(frame.boxes) == 0:
                     final_boxes = []
                     clip_input = []
+                    croped_boxes = []
                     frame_height, frame_width, _ = frame.data.shape
                     # hwc
                     padding_y = int(frame_height / 10)  # box高度增加1/5
@@ -91,8 +93,10 @@ class FallDetection:
                         x2 = x2 + padding_x if (x2 + padding_x) < frame_width else frame_width
                         y2 = y2 + padding_y if (y2 + padding_y) < frame_height else frame_height
                         croped = frame.data[y1:y2, x1:x2, :]
+                        croped_boxes.append(croped)#当然，这里用更小的crop用作检测person更合适，待做
                         rgb_image = cv2.cvtColor(croped, cv2.COLOR_BGR2RGB)
                         pil_image = Image.fromarray(rgb_image)
+
                         if self.crop:
                             # 保存截图
                             pil_image.save(os.path.join("./croped", str(int(time.time())) + "_" + str(croped_id) + ".jpg"))
@@ -114,7 +118,12 @@ class FallDetection:
                         residual_prob = sum(prob[self.target_texts:])
                         # print(target_prob, residual_prob)
                         if target_prob > residual_prob:
-                            final_boxes.append(list(frame.boxes[i]))
+                            person_detection_result = self.person_model(croped_boxes[i], save=False,classes=[0],conf=0.8, verbose=False)[0]
+                            person_detection_boxes = person_detection_result.boxes.data.cpu().numpy()
+                            # 同时确保检测到的是个人
+                            if len(person_detection_boxes) != 0:#还可以从关键点遮挡的个数等角度过滤只露头和肩膀等特殊情况
+                                # print("person_detection：{}".format(person_detection_boxes))
+                                final_boxes.append(list(frame.boxes[i]))
                     frame.boxes = final_boxes#更新boxes
                     plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="fall")#画框
 
@@ -130,8 +139,8 @@ class FallDetection:
 if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
-    video_path = "../../videos/output/shuaidao_merged.mp4"
-    output_path = "shuaidao_merged_output.mp4"
+    video_path = "./videos/suzhoucamera1_2.avi"
+    output_path = "outputs/suzhoucamera1_2.avi"
     if os.path.exists(output_path):
         print("文件已存在，先删除")
         os.remove(output_path)
