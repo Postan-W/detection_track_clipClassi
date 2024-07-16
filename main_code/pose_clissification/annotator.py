@@ -8,9 +8,9 @@ from pose_data_structure import action_list
 import glob
 
 model = YOLO("../weights/yolov8x-pose.engine")
-videos = glob.glob("../../videos/suzhou_train/*")
+videos = glob.glob("../../videos/pose/*")
 print(videos)
-output_path = "train_data/suzhou_camera1.txt"
+output_path = "train_data/merged.txt"
 
 def input_action():
     action = ""

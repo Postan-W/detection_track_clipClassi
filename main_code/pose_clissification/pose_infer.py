@@ -40,11 +40,17 @@ def infer_on_video(test_video,output_path):
 
                         #需要再加几何上的过滤规则，比如俯视的时候头在最上面?可以从这个入手？
                         if action_name in ["climb"]:
-                            if action_probability > 0.7 and box_conf > 0.82:
+                            if action_probability > 0.8 and box_conf > 0.82:
                                 plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0],text_info=text_info)
                         elif action_name in ["fall"]:
-                            if action_probability > 0.7 and box_conf > 0.82:
+                            if action_probability > 0.8 and box_conf > 0.82:
                                 plot_boxes_with_text_single_box(box, frame, text_info=text_info)
+                        # if action_name in ["climb"]:
+                        #     plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0],text_info=text_info)
+                        # elif action_name in ["fall"]:
+                        #     plot_boxes_with_text_single_box(box, frame,color=[0, 0, 255], text_info=text_info)
+                        # else:
+                        #     plot_boxes_with_text_single_box(box, frame, color=[0, 255, 0], text_info=text_info)
 
             video.write(frame)
             processed_count += 1
@@ -54,8 +60,8 @@ def infer_on_video(test_video,output_path):
         cap.release()
         video.release()
 
-fanyue_total = "C:/Users/wmingdru/Desktop/workspace/data/fanyue_shuaidao/videos/*"
-shuaidao_taotal = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/videos_test/*"
+fanyue_total = "../../videos/suzhou_train/suzhoucamera1_0.avi"
+shuaidao_taotal = "output/suzhoucamera1_0.avi"
 videos_dir = glob.glob("../../videos/pose_infer/*")
 output_dir = "./output/"
 

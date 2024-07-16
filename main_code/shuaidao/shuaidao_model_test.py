@@ -1,3 +1,4 @@
+import numpy as np
 
 from get_input import VideoReader
 from queue import Queue
@@ -13,9 +14,11 @@ import time
 from myutils.cv2_utils import plot_boxes_with_text_for_yolotrack
 import os
 os.environ["MODELSCOPE_CACHE"] = "../models/"
-
+from pose_clissification.pose_utils import keypoints_filter
+from pose_clissification.pose_data_structure import action_list
+import lightgbm as lgb
 class FallDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="../weights/fall_2024712_best.engine",track_config="../track_config/botsort.yaml",crop=False,person_model="../weights/yolov8l.pt"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="../weights/fall_2024712_best.engine",track_config="../track_config/botsort.yaml",crop=False,person_model="../weights/yolov8l-pose.pt"):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
@@ -24,6 +27,7 @@ class FallDetection:
         self.track_config = track_config
         self.crop = crop#是否要保存截图
         self.person_model = YOLO(person_model)#加载一个目标检测或者姿势估计模型，用来确认目标是人
+        self.classi_model = lgb.Booster(model_file="../pose_clissification/models/lgbm.txt")
         #clip模型暂时成固定的
         self.clip_model = pipeline(task=Tasks.multi_modal_embedding,model='damo/multi-modal_clip-vit-large-patch14_336_zh', model_revision='v1.0.1')
         #暂时写成固定代码，包括下游处理的时候也是根据input_texts的0和1个prompt做筛选的
@@ -83,18 +87,18 @@ class FallDetection:
                     clip_input = []
                     croped_boxes = []
                     frame_height, frame_width, _ = frame.data.shape
-                    # hwc
-                    padding_y = int(frame_height / 10)  # box高度增加1/5
-                    padding_x = int(frame_width / 10)  # box宽度增加1/5
                     for box in frame.boxes:
+                        # hwc
+                        padding_y = int(frame_height / 10)  # box高度增加1/5
+                        padding_x = int(frame_width / 10)  # box宽度增加1/5
                         x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
                         x1 = x1 - padding_x if (x1 - padding_x) > 0 else 0
                         y1 = y1 - padding_y if (y1 - padding_y) > 0 else 0
                         x2 = x2 + padding_x if (x2 + padding_x) < frame_width else frame_width
                         y2 = y2 + padding_y if (y2 + padding_y) < frame_height else frame_height
                         croped = frame.data[y1:y2, x1:x2, :]
-                        padding_y = int(frame_height / 20)  # box高度增加1/10
-                        padding_x = int(frame_width / 20)  # box宽度增加1/10
+                        padding_y = int(frame_height / 10)  # box高度增加1/10
+                        padding_x = int(frame_width / 10)  # box宽度增加1/10
                         x1, y1, x2, y2 = int(box[0]), int(box[1]), int(box[2]), int(box[3])
                         x1 = x1 - padding_x if (x1 - padding_x) > 0 else 0
                         y1 = y1 - padding_y if (y1 - padding_y) > 0 else 0
@@ -122,16 +126,32 @@ class FallDetection:
 
                     for i, prob in enumerate(clean_result):
                         # print(i, prob)
-                        target_prob = sum(prob[:self.target_texts])
-                        residual_prob = sum(prob[self.target_texts:])
+                        max_index = np.argmax(prob, axis=0)
+                        max_value = img_result[max_index]
+                        print("最大值索引为:{},值为:{}".format(max_index, max_value))
+                        # target_prob = sum(prob[:self.target_texts])
+                        # residual_prob = sum(prob[self.target_texts:])
                         # print(target_prob, residual_prob)
-                        if target_prob > residual_prob:
-                            person_detection_result = self.person_model(croped_boxes[i], save=False,classes=[0],conf=0.8, verbose=False)[0]
+                        if max_index < self.target_texts:
+                            person_detection_result = self.person_model(croped_boxes[i], save=False,conf=0.8, verbose=False)[0]
                             person_detection_boxes = person_detection_result.boxes.data.cpu().numpy()
+                            xyn = person_detection_result.keypoints.xyn.cpu().numpy()
                             # 同时确保检测到的是个人
-                            if len(person_detection_boxes) != 0:#还可以从关键点遮挡的个数等角度过滤只露头和肩膀等特殊情况
-                                # print("person_detection：{}".format(person_detection_boxes))
-                                final_boxes.append(list(frame.boxes[i]))
+                            if len(person_detection_boxes) != 0:
+                                for i, box in enumerate(person_detection_boxes):
+                                    keypoints = xyn[i]
+                                    if keypoints_filter(keypoints):
+                                        action_result = self.classi_model.predict(torch.tensor(keypoints[3:].flatten(),dtype=torch.float32).unsqueeze(0).tolist())
+                                        action_index = np.argmax(action_result, axis=1)[0]
+                                        action_probability = round(action_result[0][action_index],2)
+                                        action_name = action_list[action_index]
+                                        text_info = action_name + " p:{}".format(action_probability) + " conf:" + (str(round(box[4],2)) if len(box) == 6 else str(round(box[5],2)))
+                                        box_conf = round(box[4],2) if len(box) == 6 else round(box[5],2)
+                                        print("动作名称是:{}".format(action_name))
+                                        if action_name in ["fall"] and action_probability > 0.9:
+                                            final_boxes.append(list(frame.boxes[i]))
+                                            break
+
                     frame.boxes = final_boxes#更新boxes
                     plot_boxes_with_text_for_yolotrack(frame.boxes, frame.data, class_name="fall")#画框
 
@@ -148,7 +168,7 @@ if __name__ == '__main__':
     input_queue = Queue(1000)
     output_queue = Queue(1000)
     video_path = "./videos/suzhoucamera1_7.avi"
-    output_path = "outputs/suzhoucamera1_7.avi"
+    output_path = "outputs/suzhoucamera1_7.mp4"
     if os.path.exists(output_path):
         print("文件已存在，先删除")
         os.remove(output_path)
@@ -159,7 +179,7 @@ if __name__ == '__main__':
     climbing_detection.start()
     first_image = output_queue.get().data
     height, width, _ = first_image.shape
-    video = cv2.VideoWriter(output_path,cv2.VideoWriter_fourcc(*'DIVX'), 30, (width, height))
+    video = cv2.VideoWriter(output_path,cv2.VideoWriter_fourcc(*'X264'), 30, (width, height))
     # print((width, height))
     video.write(first_image)
     processed_count = 0

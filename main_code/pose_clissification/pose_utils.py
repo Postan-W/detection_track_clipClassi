@@ -16,7 +16,7 @@ def name2index(data_path,output_path,action=Action().dict()):
                 t[0] = label
                 f_out.write(",".join(map(str,t)) + "\n")
 
-name2index("./train_data/train.txt","./train_data/train_indexed.txt")
+# name2index("./train_data/merged.txt","./train_data/merged_indexed.txt")
 
 #统计每个类别的样本个数
 def count_samples(lines:List[str]):
@@ -54,7 +54,7 @@ def keypoints_filter(keypoints:np.array=None)->bool:
             d[name] = xy_sum
 
     # 这里设定两个过滤规则，关于过滤规则还待探究
-    if zeros >= 4:
+    if zeros >= 6:
         print("***遮挡过多,无效数据***")
         return False
 
@@ -62,9 +62,9 @@ def keypoints_filter(keypoints:np.array=None)->bool:
     if sum([d["LEFT_KNEE"],d["RIGHT_KNEE"]]) == 0 and sum([d["LEFT_ANKLE"],d["RIGHT_ANKLE"]]) == 0:
         print("***双膝以及双踝被遮挡，无效数据***")
         return False
-    if sum([d['LEFT_EAR'],d['RIGHT_EAR']]) == 0:
-        print("****头部被遮挡,无效数据*******")
-        return False
+    # if sum([d['LEFT_EAR'],d['RIGHT_EAR']]) == 0:
+    #     print("****头部被遮挡,无效数据*******")
+    #     return False
 
     return True
 

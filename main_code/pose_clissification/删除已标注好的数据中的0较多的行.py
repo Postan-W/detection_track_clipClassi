@@ -1,5 +1,5 @@
-input_path = "train_data/train.txt"
-output_path = "train_data/train_.txt"
+input_path = "train_data/merged.txt"
+output_path = "train_data/merged.txt"
 #超过4个关键点被遮挡的我就不要该行(也就是8个0,一般都是成对出现的)
 with open(input_path, "r") as f_in:
     with open(output_path, "w") as f_out:
