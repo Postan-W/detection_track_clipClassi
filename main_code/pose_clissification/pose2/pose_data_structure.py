@@ -30,14 +30,10 @@ class KeyPoints(BaseModel):
 
 #这里的动作定义既包含了摔倒的(FALL)也包含了翻越的(CLIMB)
 class Action(BaseModel):
-    STAND: int = 0
-    SIT: int = 1
-    FALL: int = 2
-    SQUAT: int = 3
-    BEND: int = 4
-    CLIMB: int = 5
-    # STRADDLE: int = 6 #跨这个动作暂时不作为翻越的行为，以免人行走时跨步产生误报
+    FALL: int = 0
+    CLIMB: int = 1
+    OTHERS: int = 2
 
-action_list = ["stand","sit","fall","squat","bend","climb"]
+action_list = ["fall","climb","others"]
 
 

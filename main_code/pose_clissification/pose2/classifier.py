@@ -136,7 +136,7 @@ if __name__ == "__main__":
         'task': 'train',
         'boosting_type': 'gbdt',
         'objective': 'multiclass',
-        'num_class': 6,
+        'num_class': 3,
         'metric': {'multi_logloss'},
         'num_leaves': 31,
         'learning_rate': 0.009,

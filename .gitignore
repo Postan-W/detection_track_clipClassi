@@ -11,6 +11,7 @@ models/*
 *.png
 ./main_code/runs/*
 *.pt
+*.ts
 *.onnx
 *.engine
 ./images/
