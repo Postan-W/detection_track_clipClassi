@@ -8,6 +8,7 @@ import numpy as np
 from typing import List
 #在构建数据的时候标签使用的是名称，这样比索引更直观，而且避免出错,这里在训练前把名称转为index
 def name2index(data_path,output_path,action=Action().dict()):
+    print(action)
     with open(data_path,"r") as f_in:
         with open(output_path,"w") as f_out:
             for line in f_in:

@@ -1,13 +1,13 @@
 from ultralytics import YOLO
 # Load a model
-model = YOLO("../weights/yolov8x-pose.engine")  #load an official model
-video_path = "../../videos/fanyue_shuaidao/fanyue_negative_trimmed.mp4"
+model = YOLO("../../weights/yolov8x-pose.engine")  #load an official model
+video_path = "./pj148.mp4"
 image_path = ""
 print(model.names)#人体姿势估计，检测的对象只有人
 # Predict with the model
 
 def process_video(video_path):
-    results = model.track(video_path, save=True,verbose=False, stream=True,persist=True, tracker="../track_config/botsort.yaml")
+    results = model(video_path, save=True,verbose=False, stream=True)
     for result in results:
         xyn = result.keypoints.xyn.cpu().numpy()
         xyn = xyn[:,3:]#从第四个关键点开始

@@ -32,8 +32,9 @@ class KeyPoints(BaseModel):
 class Action(BaseModel):
     FALL: int = 0
     CLIMB: int = 1
-    OTHERS: int = 2
+    STAND: int = 2
+    OTHERS: int = 3
 
-action_list = ["fall","climb","others"]
+action_list = ["fall","climb","stand","others"]
 
 
