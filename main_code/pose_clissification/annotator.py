@@ -7,14 +7,14 @@ import os
 from pose_data_structure import action_list
 import glob
 
-model = YOLO("../weights/yolov8x-pose.engine")
-videos = glob.glob("../../videos/pose/*")
+model = YOLO("../../weights/yolov8x-pose.engine")
+videos = glob.glob("./train_videos/*")
 print(videos)
-output_path = "train_data/merged.txt"
+output_path = "train_data/four_classes.txt"
 
 def input_action():
     action = ""
-    while not action in (action_list + ["p"] + ["exit"]):#p代表不为当前box标注
+    while not action in (action_list + ["p","pp"] + ["exit"]):#p代表不为当前box标注。pp代表不为当前帧标注
         action = input("输入动作名称:")
     print("标签是:{}".format(action))
     return action
@@ -49,18 +49,22 @@ def annotator(videos):
             while ret:
                 if exit_signal:
                     break
-                if count % 15 == 0:  # 跳帧标注
+                if count % 10 == 0:  # 跳帧标注
                     try:
-                        result = model.track(frame, save=False, verbose=False, persist=True,tracker="../track_config/botsort.yaml")[0]
+                        result = model(frame, save=False, verbose=False)[0]
                     except Exception as e:
                         print(e)
                         break
                     boxes = result.boxes.data.cpu().numpy()
                     xyn = result.keypoints.xyn.cpu().numpy()
+                    xy = result.keypoints.xy.cpu().numpy()
                     if not len(boxes) == 0:
                         for i, box in enumerate(boxes):
-                            text_info = "box:" + str(i)  # index最大的那个就是当前要标注的那个box(cv2.imshow的标题也会提示当前是哪个box)
+                            text_info = "box:" + str(i) # index最大的那个就是当前要标注的那个box(cv2.imshow的标题也会提示当前是哪个box)
                             plot_boxes_with_text_single_box(box, frame, text_info=text_info)#当前框是红的
+                            for point in xy[i]:#画关键点
+                                x, y = int(point[0]), int(point[1])
+                                cv2.circle(frame, (x, y), 3, (0, 255, 0), -1)
                             if i > 0:#前一个框画成蓝色
                                 plot_boxes_with_text_single_box(boxes[i - 1],frame,color=[255,0,0],text_info="box:" + str(i - 1))
 
@@ -73,10 +77,14 @@ def annotator(videos):
                                     cv2.destroyAllWindows()
                                     break
                             action = input_action() #手动输入的标签
-                            if action == "p":
-                                print("不为当前box标注")
-                                cv2.destroyAllWindows()
-                                continue
+                            if action in ["p","pp"]:
+                                if len(action) == 1:
+                                    print("不为当前box标注")
+                                    cv2.destroyAllWindows()
+                                    continue
+                                elif len(action) == 2:
+                                    print("不为当前帧标注")
+                                    break
                             elif action == "exit":
                                 exit_signal = True
                                 break

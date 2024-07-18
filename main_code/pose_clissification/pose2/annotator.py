@@ -10,7 +10,7 @@ import glob
 model = YOLO("../../weights/yolov8x-pose.engine")
 videos = glob.glob("./train_videos/*")
 print(videos)
-output_path = "train_data/four_classes.txt"
+output_path = "train_data/four_classes_su_plus_jinan2.txt"
 
 def input_action():
     action = ""
@@ -49,7 +49,7 @@ def annotator(videos):
             while ret:
                 if exit_signal:
                     break
-                if count % 10 == 0:  # 跳帧标注
+                if count % 5 == 0:  # 跳帧标注
                     try:
                         result = model(frame, save=False, verbose=False)[0]
                     except Exception as e:
@@ -64,7 +64,7 @@ def annotator(videos):
                             plot_boxes_with_text_single_box(box, frame, text_info=text_info)#当前框是红的
                             for point in xy[i]:#画关键点
                                 x, y = int(point[0]), int(point[1])
-                                cv2.circle(frame, (x, y), 5, (0, 255, 0), -1)
+                                cv2.circle(frame, (x, y), 3, (0, 255, 0), -1)
                             if i > 0:#前一个框画成蓝色
                                 plot_boxes_with_text_single_box(boxes[i - 1],frame,color=[255,0,0],text_info="box:" + str(i - 1))
 

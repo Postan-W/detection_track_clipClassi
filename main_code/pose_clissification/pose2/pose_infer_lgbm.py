@@ -8,12 +8,13 @@ import glob,os
 import numpy as np
 import lightgbm as lgb
 device = torch.device("cuda")
-pose_model = YOLO("../weights/yolov8x-pose.engine")
-classi_model = lgb.Booster(model_file="./models/lgbm.txt")
+pose_model = YOLO("../../weights/yolov8x-pose.engine")
+classi_model = lgb.Booster(model_file="./models/su_plus_jinan2_lgbm.txt")
 # classi_model = joblib.load("./models/best_gbm.joblib")
 
+
 def infer_on_video(test_video,output_path):
-    with torch.no_grad():  #在forward时不会存储为计算梯度能用到的中间值
+    with torch.no_grad():
         cap = cv2.VideoCapture(test_video)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         ret, frame = cap.read()
@@ -22,7 +23,7 @@ def infer_on_video(test_video,output_path):
         processed_count = 0
         while ret:
             try:
-                result = pose_model.track(frame, save=False, verbose=False, persist=True,tracker="../track_config/botsort.yaml")[0]
+                result = pose_model(frame, save=False, verbose=False)[0]
             except:
                 break
             boxes = result.boxes.data.cpu().numpy()
@@ -36,17 +37,14 @@ def infer_on_video(test_video,output_path):
                         action_probability = round(action_result[0][action_index],2)
                         action_name = action_list[action_index]
                         text_info = action_name + " p:{}".format(action_probability) + " conf:" + (str(round(box[4],2)) if len(box) == 6 else str(round(box[5],2)))
+                        text_info = "*"*30 + text_info + "*"*30
                         box_conf = round(box[4],2) if len(box) == 6 else round(box[5],2)#被遮挡的人体部位的关键点总是被误检，但conf应该是低的，所以用conf过滤到这种情况
 
-                        #需要再加几何上的过滤规则，比如俯视的时候头在最上面?可以从这个入手？
-                        if action_name in ["climb"]:
-                            if action_probability > 0.93 and box_conf > 0.82:
-                                plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0],text_info=text_info)
-                        elif action_name in ["fall"]:
-                            if action_probability > 0.93 and box_conf > 0.82:
+                        if ((action_probability > 0.95) and (box_conf > 0.85)) or ((action_probability >= 0.92) and (box_conf >= 0.92)):
+                            if action_name in ["climb"]:
+                                plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0], text_info=text_info)
+                            elif action_name in ["fall"]:
                                 plot_boxes_with_text_single_box(box, frame, text_info=text_info)
-                        else:
-                            plot_boxes_with_text_single_box(box, frame, color=[0, 255, 0], text_info=text_info)
 
 
             video.write(frame)
@@ -57,7 +55,9 @@ def infer_on_video(test_video,output_path):
         cap.release()
         video.release()
 
-videos_dir = glob.glob("../../videos/pose_infer/*")
+# videos_dir = glob.glob("../../../videos/suzhou_train/*")
+videos_dir = glob.glob("C:/Users/wmingdru/Desktop/pose_train_videos/*")
+
 output_dir = "./output/"
 
 for video in videos_dir:

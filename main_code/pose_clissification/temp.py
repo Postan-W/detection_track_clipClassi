@@ -20,5 +20,15 @@ def f2():
             for line in a:
                 f_out.write(line)
 
-f2()
+def f3():
+    # 把climb和fall的单独拿出来
+    input_path = "./train_data/merged.txt"
+    output_path = "train_data/only_climb_fall.txt"
+    with open(input_path, "r") as f_in:
+        with open(output_path, "w") as f_out:
+            for line in f_in:
+                t = line.strip().split(",")
+                if (t[0] == "climb") or (t[0] == "fall"):
+                    f_out.write(line)
+
 

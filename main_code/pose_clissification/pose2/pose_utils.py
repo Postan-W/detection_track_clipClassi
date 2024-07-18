@@ -17,7 +17,7 @@ def name2index(data_path,output_path,action=Action().dict()):
                 t[0] = label
                 f_out.write(",".join(map(str,t)) + "\n")
 
-# name2index("./train_data/merged.txt","./train_data/merged_indexed.txt")
+# name2index("./train_data/four_classes_su_plus_jinan2.txt","./train_data/four_classes_su_plus_jinan2_indexed.txt")
 
 #统计每个类别的样本个数
 def count_samples(lines:List[str]):
