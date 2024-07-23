@@ -9,11 +9,13 @@ import numpy as np
 import lightgbm as lgb
 device = torch.device("cuda")
 pose_model = YOLO("../../weights/yolov8x-pose.engine")
-classi_model = lgb.Booster(model_file="./models/su_plus_jinan2_lgbm.txt")
+classi_model = lgb.Booster(model_file="./models/su_plus_jinan3_lgbm.txt")
 # classi_model = joblib.load("./models/best_gbm.joblib")
 
 
 def infer_on_video(test_video,output_path):
+    fall_count = 0
+    climb_count = 0
     with torch.no_grad():
         cap = cv2.VideoCapture(test_video)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -28,6 +30,7 @@ def infer_on_video(test_video,output_path):
                 break
             boxes = result.boxes.data.cpu().numpy()
             xyn = result.keypoints.xyn.cpu().numpy()  #normalized keypoints
+            xy = result.keypoints.xy.cpu().numpy()
             if not len(boxes) == 0:
                 for i, box in enumerate(boxes):
                     keypoints = xyn[i]
@@ -39,12 +42,19 @@ def infer_on_video(test_video,output_path):
                         text_info = action_name + " p:{}".format(action_probability) + " conf:" + (str(round(box[4],2)) if len(box) == 6 else str(round(box[5],2)))
                         text_info = "*"*30 + text_info + "*"*30
                         box_conf = round(box[4],2) if len(box) == 6 else round(box[5],2)#被遮挡的人体部位的关键点总是被误检，但conf应该是低的，所以用conf过滤到这种情况
+                        for point in xy[i]:  # 画关键点
+                            x, y = int(point[0]), int(point[1])
+                            cv2.circle(frame, (x, y), 3, (0, 255, 0), -1)
 
                         if ((action_probability > 0.95) and (box_conf > 0.85)) or ((action_probability >= 0.92) and (box_conf >= 0.92)):
                             if action_name in ["climb"]:
                                 plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0], text_info=text_info)
+                                climb_count += 1
+                                cv2.imwrite("C:/Users/wmingdru/Desktop/workspace/projects/detection_track_clipClassi/main_code/pose_clissification/pose2/crops/climb_{}.jpg".format(climb_count),frame)
                             elif action_name in ["fall"]:
                                 plot_boxes_with_text_single_box(box, frame, text_info=text_info)
+                                fall_count += 1
+                                cv2.imwrite("C:/Users/wmingdru/Desktop/workspace/projects/detection_track_clipClassi/main_code/pose_clissification/pose2/crops/fall_{}.jpg".format(fall_count), frame)
 
 
             video.write(frame)

@@ -10,7 +10,7 @@ import glob
 model = YOLO("../../weights/yolov8x-pose.engine")
 videos = glob.glob("./train_videos/*")
 print(videos)
-output_path = "train_data/four_classes_su_plus_jinan2.txt"
+output_path = "train_data/four_classes_su_plus_jinan3.txt"
 
 def input_action():
     action = ""
@@ -93,7 +93,7 @@ def annotator(videos):
                                 # 过滤
                                 if keypoints_filter(keypoints):
                                     action_counter[action] += 1
-                                    print(action_counter)
+                                    print(action_counter,"共:{}".format(sum(action_counter.values())))
                                     keypoints = [str(i) for i in keypoints[3:].flatten()]
                                     keypoints = ",".join(keypoints)
                                     f.write(action + "," + keypoints + "\n")

@@ -138,7 +138,7 @@ if __name__ == "__main__":
         'objective': 'multiclass',
         'num_class': 4,
         'metric': {'multi_logloss'},
-        'num_leaves': 15,
+        'num_leaves': 16,
         'learning_rate': 0.009,
         'colsample_bytree': 0.9,
         'subsample': 0.9,
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         'lambda_l2': 0,
         'verbose': 0
     }
-    lgbm = LightGBM(params=params,num_boost_round=1000,train_data="./train_data/four_classes_su_plus_jinan2_indexed.txt",model_save_path="./models/su_plus_jinan2_lgbm.txt")
+    lgbm = LightGBM(params=params,num_boost_round=1000,train_data="./train_data/four_classes_su_plus_jinan3_indexed.txt",model_save_path="./models/su_plus_jinan3_lgbm.txt")
     gbm_model = lgbm.train()
     # model = lgb.Booster(model_file="./models/lgbm.txt")
     # results = model.predict([[0.0,0.0,0.44522902,0.42797977,0.42548296,0.42939463,0.43283972,0.44478908,0.0,0.0,0.44119215,0.49945438,0.0,0.0,0.4552446,0.52110904,0.39579314,0.5014287,0.400371,0.5122012,0.43441874,0.5071763,0.44037935,0.5308573,0.4124673,0.5521924,0.41139397,0.5661066]])
