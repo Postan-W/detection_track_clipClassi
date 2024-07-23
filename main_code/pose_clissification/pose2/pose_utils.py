@@ -63,6 +63,14 @@ def keypoints_filter(keypoints:np.array=None)->bool:
     if sum([d["LEFT_KNEE"],d["RIGHT_KNEE"]]) == 0 and sum([d["LEFT_ANKLE"],d["RIGHT_ANKLE"]]) == 0:
         print("***双膝以及双踝被遮挡，无效数据***")
         return False
+    lower_body = 0
+    for i in [d["LEFT_KNEE"],d["RIGHT_KNEE"],d["LEFT_ANKLE"],d["RIGHT_ANKLE"]]:
+        if i == 0:
+            lower_body += 1
+    if lower_body >= 3:
+        print("下半身至少有三个关键点被遮挡")
+        return False
+
     # if sum([d['LEFT_EAR'],d['RIGHT_EAR']]) == 0:
     #     print("****头部被遮挡,无效数据*******")
     #     return False

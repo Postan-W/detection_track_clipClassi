@@ -49,7 +49,7 @@ def annotator(videos):
             while ret:
                 if exit_signal:
                     break
-                if count % 5 == 0:  # 跳帧标注
+                if count % 3 == 0:  # 跳帧标注
                     try:
                         result = model(frame, save=False, verbose=False)[0]
                     except Exception as e:

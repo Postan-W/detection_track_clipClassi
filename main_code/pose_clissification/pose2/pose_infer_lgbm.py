@@ -67,7 +67,7 @@ def infer_on_video(test_video,output_path):
 
 # videos_dir = glob.glob("../../../videos/suzhou_train/*")
 videos_dir = glob.glob("C:/Users/wmingdru/Desktop/pose_train_videos/*")
-
+# videos_dir = glob.glob("../../../videos/pose/*")
 output_dir = "./output/"
 
 for video in videos_dir:
