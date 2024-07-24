@@ -138,7 +138,7 @@ if __name__ == "__main__":
         'objective': 'multiclass',
         'num_class': 4,
         'metric': {'multi_logloss'},
-        'num_leaves': 20,
+        'num_leaves': 22,
         'learning_rate': 0.009,
         'colsample_bytree': 0.9,
         'subsample': 0.9,

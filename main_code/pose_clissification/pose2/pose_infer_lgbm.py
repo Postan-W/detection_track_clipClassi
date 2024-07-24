@@ -21,7 +21,7 @@ def infer_on_video(test_video,output_path):
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         ret, frame = cap.read()
         height, width, _ = frame.shape
-        video = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'X264'), 30,(width, height))
+        video = cv2.VideoWriter(output_path,cv2.VideoWriter_fourcc(*'X264'), 30,(width, height))
         processed_count = 0
         while ret:
             try:
@@ -49,12 +49,12 @@ def infer_on_video(test_video,output_path):
                         if ((action_probability > 0.95) and (box_conf > 0.85)) or ((action_probability >= 0.92) and (box_conf >= 0.92)):
                             if action_name in ["climb"]:
                                 plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0], text_info=text_info)
-                                climb_count += 1
-                                cv2.imwrite("C:/Users/wmingdru/Desktop/workspace/projects/detection_track_clipClassi/main_code/pose_clissification/pose2/crops/climb_{}.jpg".format(climb_count),frame)
+                                # climb_count += 1
+                                # cv2.imwrite("C:/Users/wmingdru/Desktop/workspace/projects/detection_track_clipClassi/main_code/pose_clissification/pose2/crops/climb_{}.jpg".format(climb_count),frame)
                             elif action_name in ["fall"]:
                                 plot_boxes_with_text_single_box(box, frame, text_info=text_info)
-                                fall_count += 1
-                                cv2.imwrite("C:/Users/wmingdru/Desktop/workspace/projects/detection_track_clipClassi/main_code/pose_clissification/pose2/crops/fall_{}.jpg".format(fall_count), frame)
+                                # fall_count += 1
+                                # cv2.imwrite("C:/Users/wmingdru/Desktop/workspace/projects/detection_track_clipClassi/main_code/pose_clissification/pose2/crops/fall_{}.jpg".format(fall_count), frame)
 
 
             video.write(frame)
