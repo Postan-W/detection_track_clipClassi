@@ -1,7 +1,7 @@
 import cv2
 import os
 
-def get_source(rootpath:str,source_format:list=["mp4","avi"]):
+def get_source(rootpath:str,source_format:list=["mp4","avi","ts"]):
     source_list = [i for i in os.listdir(rootpath) if i.split(".")[1] in source_format]
     return [os.path.join(rootpath,i) for i in source_list]
 
@@ -26,8 +26,8 @@ def get_images(videopath,destination,step = 5,current_video_index=0,total_video_
     cv2.destroyAllWindows()
 
 
-destination = "C:/Users/wmingdru/Desktop/workspace/data/shuaidao/20240712/train/images/"
-videos = get_source("./videos/suzhou_train/")
+destination = "C:/Users/wmingdru/Desktop/workspace/data/20240726climb_fall/train/images/"
+videos = get_source("C:/Users/wmingdru/Desktop/pose_train_videos/")
 
 total_video_num = len(videos)
 for i,videopath in enumerate(videos):
@@ -37,7 +37,7 @@ for i,videopath in enumerate(videos):
 def single_video():
     cap = cv2.VideoCapture("main_code/outputs/fanyue_merged_output.mp4")
     ret, frame = cap.read()
-    destination = "C:/Users/wmingdru/Desktop/t"
+    destination = "C:/Users/wmingdru/Desktop/workspace/data/20240726climb_fall/train/images/"
     count = 1
     while ret:
         if count % 2 == 0 and ret:

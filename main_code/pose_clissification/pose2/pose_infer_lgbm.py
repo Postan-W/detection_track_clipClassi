@@ -46,7 +46,7 @@ def infer_on_video(test_video,output_path):
                             x, y = int(point[0]), int(point[1])
                             cv2.circle(frame, (x, y), 3, (0, 255, 0), -1)
 
-                        if ((action_probability > 0.95) and (box_conf > 0.85)) or ((action_probability >= 0.92) and (box_conf >= 0.92)):
+                        if ((action_probability > 0.95) and (box_conf > 0.8)) or ((action_probability >= 0.92) and (box_conf >= 0.85)):
                             if action_name in ["climb"]:
                                 plot_boxes_with_text_single_box(box, frame, color=[255, 0, 0], text_info=text_info)
                                 # climb_count += 1
@@ -66,8 +66,8 @@ def infer_on_video(test_video,output_path):
         video.release()
 
 # videos_dir = glob.glob("../../../videos/suzhou_train/*")
-videos_dir = glob.glob("C:/Users/wmingdru/Desktop/pose_train_videos/*")
-# videos_dir = glob.glob("../../../videos/pose/*")
+# videos_dir = glob.glob("C:/Users/wmingdru/Desktop/pose_train_videos/*")
+videos_dir = glob.glob("../../../videos/pose/*")
 output_dir = "./output/"
 
 for video in videos_dir:
