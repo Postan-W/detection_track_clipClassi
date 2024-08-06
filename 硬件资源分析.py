@@ -39,7 +39,7 @@ def disk_usage():
     disk_partitions = psutil.disk_partitions(all=True)
     for partition in disk_partitions:
         total, used, free, percent = get_disk_usage(partition.mountpoint)
-        print("挂载点名称:{}".format(partition.mountpoint))
+        print("挂载点名称:{}".format(partition.device))
         print(f"Total Disk Space: {total:.2f} GB")
         print(f"Used Disk Space: {used:.2f} GB")
         print(f"Free Disk Space: {free:.2f} GB")

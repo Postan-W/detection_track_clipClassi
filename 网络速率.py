@@ -7,7 +7,7 @@ def get_network_usage(interface):
     获取指定网络接口的传输速度（字节/秒）
     """
     old_counters = psutil.net_io_counters(pernic=True)[interface]
-    time.sleep(0.2)  # 等待一秒
+    time.sleep(0.2)  # 等待
     new_counters = psutil.net_io_counters(pernic=True)[interface]
     bytes_sent = new_counters.bytes_sent - old_counters.bytes_sent
     bytes_recv = new_counters.bytes_recv - old_counters.bytes_recv
