@@ -3,6 +3,8 @@ import time
 import GPUtil
 import py3nvml.py3nvml as pynv
 import pynvml
+import os
+import re
 def print_cpu_usage():
     cpu_usage = psutil.cpu_percent(interval=1)
     print(f"CPU Usage: {cpu_usage}%")
@@ -71,16 +73,6 @@ def check_gpu_usage():
 
 
 
-def network_info():
-    # 获取所有网卡的名称
-    net_ifs = psutil.net_if_stats().keys()
-    # 遍历所有网卡，获取带宽信息
-    for net_if in net_ifs:
-        if_stats = psutil.net_if_stats()[net_if]
-        if if_stats.isup:
-            print(f"网卡名称: {net_if}")
-            print(f"上传速度: {if_stats.speed} Mbps")
-            print(f"下载速度: {if_stats.speed} Mbps")
 
 if __name__ == "__main__":
         print_cpu_usage()
@@ -91,6 +83,5 @@ if __name__ == "__main__":
         print("="*100)
         check_gpu_usage()
         print("="*100)
-        network_info
         print("=" * 100)
 
