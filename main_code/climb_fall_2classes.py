@@ -2,13 +2,8 @@ from ultralytics import YOLO
 from get_input import VideoReader
 from queue import Queue
 from threading import Thread
-from myutils.public_logger import logger
 import cv2
 import glob
-import torch
-from modelscope.utils.constant import Tasks
-from modelscope.pipelines import pipeline
-from modelscope.preprocessors.image import load_image
 from ultralytics import YOLO
 from PIL import Image
 import time
@@ -17,14 +12,14 @@ import os
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 class ClimbingFallingDetection:
-    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/climb_fall_0805.engine",track_config="./track_config/botsort.yaml"):
+    def __init__(self,input_queue:Queue,output_queue:Queue,yolo_model:str="./weights/cimb_fall_1280.engine",track_config="./track_config/botsort.yaml",crop_count = 0):
         self.yolo_model = YOLO(yolo_model)
         self.thread = Thread(target=self.task)
         self.input_queue = input_queue
         self.output_queue = output_queue
         self.id_record = {}#key:id;value:time.time()
         self.track_config = track_config
-
+        self.crop_count = crop_count
     def id_update(self,frame,threshhold:int=5):
         """
         :param frame: 自定义的frame
@@ -60,11 +55,11 @@ class ClimbingFallingDetection:
         while True:
             frame = self.input_queue.get()
             if not frame.stops:
-                result = self.yolo_model.track(persist=True,verbose=False,source=frame.data,tracker=self.track_config,classes=[0,1],conf=0.8,iou=0.7,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
+                result = self.yolo_model.track(persist=True,verbose=False,imgsz=1280,source=frame.data,tracker=self.track_config,classes=[0,1],conf=0.6,iou=0.6,stream=False,show_labels=False,show_conf=False,show_boxes=False,save=False,save_crop=False)[0]#因为只有一张图片
                 frame.boxes = result.boxes.data.tolist()#[[x1,y1,x2,y2,id,conf,cls],[]..]] or []
                 for box in frame.boxes:
                     class_name = "climb" if box[-1] == 0 else "fall"
-                    color = [255,0,0] if box[-1] == 0 else [0,255,0]
+                    color = [255,0,0] if box[-1] == 0 else [0,0,255]
                     plot_boxes_with_text_for_yolotrack([box], frame.data, color=color,class_name=class_name)
 
                 self.id_update(frame)
@@ -77,8 +72,12 @@ class ClimbingFallingDetection:
         self.thread.start()
 
 if __name__ == '__main__':
-    videos = glob.glob("C:/Users/wmingdru/Desktop/pose_train_videos/*")
-    for video in videos:
+    videos = glob.glob("C:/Users/wmingdru/Desktop/clear_videos/*")
+    crop_count = 0
+    all_start = time.perf_counter()
+    video_num = len(videos)
+    for video_index,video in enumerate(videos):
+        current_start = time.perf_counter()
         input_queue = Queue(1000)
         output_queue = Queue(1000)
         video_path = video
@@ -86,7 +85,7 @@ if __name__ == '__main__':
         video_reader = VideoReader(video_path=video_path,image_queue=input_queue,timestep=1)
         total_frames = int(video_reader.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         video_reader.start()
-        climbing_detection = ClimbingFallingDetection(input_queue,output_queue)
+        climbing_detection = ClimbingFallingDetection(input_queue,output_queue,crop_count=crop_count)
         climbing_detection.start()
         first_image = output_queue.get().data
         height, width, _ = first_image.shape
@@ -106,7 +105,7 @@ if __name__ == '__main__':
 
                 video.write(frame.data)
                 processed_count += 1
-                print("{}/{},{}%".format(processed_count, total_frames, round((processed_count / total_frames) * 100, 2)))
+                print("\r当前视频:{}=={}/{},{}%,当前耗时:{}==,总进度:{}/{},总耗时:{}".format(os.path.split(video_path)[1],processed_count, total_frames, round((processed_count / total_frames) * 100, 2),round(time.perf_counter()-current_start,1),video_index+1,video_num,round(time.perf_counter()-all_start,1)),end="")
             else:
                 video.release()
                 break
